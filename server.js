@@ -188,14 +188,23 @@ app.put('/api/clients/:id', async (req, res) => {
 app.delete('/api/clients/:id', async (req, res) => {
     const clientId = req.params.id;
     try {
+        // Check if client has active loans
         const activeLoans = await pool.query(`SELECT COUNT(*) FROM loans WHERE client_id = $1 AND status = 'active'`, [clientId]);
         if (parseInt(activeLoans.rows[0].count) > 0) {
-            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayoendelea' });
+            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayoendelea. Maliza mikopo kwanza.' });
         }
-        const result = await pool.query(`UPDATE clients SET status = 'deleted', deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`, [clientId]);
-        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
-        res.json({ success: true, message: 'Mteja amefutwa', data: result.rows[0] });
-    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
+        
+        // HARD DELETE - completely remove from database
+        const result = await pool.query(`DELETE FROM clients WHERE id = $1 RETURNING *`, [clientId]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
+        }
+        
+        res.json({ success: true, message: 'Mteja amefutwa kabisa kwenye database', data: result.rows[0] });
+    } catch (error) { 
+        res.status(500).json({ success: false, message: 'Server error' }); 
+    }
 });
 
 // ==================== LOANS WITH SORTING ====================

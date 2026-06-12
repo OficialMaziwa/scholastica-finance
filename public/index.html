@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scholastica Finance - Mfumo wa Mikopo</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -85,7 +84,7 @@
         .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(26,74,122,0.3); }
         .demo-text { text-align: center; margin-top: 20px; color: #888; font-size: 12px; }
         
-        /* Stats Cards - FIXED FONT SIZE */
+        /* Stats Cards */
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
@@ -171,26 +170,6 @@
         .btn-alert { background: #2196f3; color: white; }
         .btn-alert:hover { background: #1976d2; }
         
-        .chart-container { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 20px; 
-            margin-bottom: 30px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .chart-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 25px; 
-        }
-        .chart-box { 
-            background: #fafafa; 
-            border-radius: 16px; 
-            padding: 15px;
-        }
-        canvas { max-height: 280px; width: 100% !important; }
-        @media (max-width: 800px) { .chart-grid { grid-template-columns: 1fr; } }
-        
         .form-card { background: #fafafa; border-radius: 16px; padding: 25px; }
         .form-row { margin-bottom: 20px; }
         .form-row label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
@@ -241,12 +220,12 @@
                 <h1>🏦 SCHOLASTICA FINANCE</h1>
                 <p>Mfumo wa Usimamizi wa Mikopo - Watu wa Mtaani</p>
             </div>
-            <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">🚪 TOWA MFUMO</button>
+            <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">🚪 Toka</button>
         </div>
     </div>
 
     <div class="container">
-        <!-- Login Section - MUST LOGIN FIRST -->
+        <!-- Login Section -->
         <div id="loginSection" class="login-wrapper">
             <div class="login-card">
                 <h2>🔐 KARIBU!</h2>
@@ -265,25 +244,10 @@
             </div>
         </div>
 
-        <!-- Dashboard Section - Only visible after login -->
+        <!-- Dashboard Section -->
         <div id="dashboardSection" style="display:none">
             <!-- Stats Cards -->
             <div class="stats-grid" id="statsContainer"></div>
-            
-            <!-- Charts Section -->
-            <div class="chart-container">
-                <h3 class="section-title">📊 MWELEKEO WA MFUMO</h3>
-                <div class="chart-grid">
-                    <div class="chart-box">
-                        <canvas id="loansChart" width="400" height="250"></canvas>
-                        <p style="text-align:center; margin-top:10px; font-size:12px; color:#666;">Mikopo Kwa Miezi</p>
-                    </div>
-                    <div class="chart-box">
-                        <canvas id="paymentsChart" width="400" height="250"></canvas>
-                        <p style="text-align:center; margin-top:10px; font-size:12px; color:#666;">Malipo Kwa Miezi</p>
-                    </div>
-                </div>
-            </div>
             
             <!-- Tabs -->
             <div class="tabs-wrapper">
@@ -292,7 +256,7 @@
                 <button class="tab" onclick="showTab('defaulters')">⚠️ WADAIWA SUGU</button>
                 <button class="tab" onclick="showTab('upcoming')">⏰ INAKARIBIA KUISHA</button>
                 <button class="tab" onclick="showTab('payments')">💵 MALIPO</button>
-                <button class="tab" onclick="showTab('addClient')">➕ MTEA MPYA</button>
+                <button class="tab" onclick="showTab('addClient')">➕ MTEJA MPYA</button>
                 <button class="tab" onclick="showTab('addLoan')">📋 MKOPO MPYA</button>
                 <button class="tab" onclick="showTab('makePayment')">💸 LIPA MKOPO</button>
             </div>
@@ -335,19 +299,19 @@
             </div>
 
             <div id="addClientTab" class="tab-content">
-                <h3 class="section-title">➕ KUONGEZA MTEA MPYA</h3>
+                <h3 class="section-title">➕ MTEJA MPYA</h3>
                 <div id="addClientMsg"></div>
                 <div class="form-card">
                     <div class="form-row"><label>Jina kamili *</label><input type="text" id="clientName" placeholder="Mfano: John Mwema"></div>
                     <div class="form-row"><label>Namba ya simu *</label><input type="text" id="clientPhone" placeholder="0712345678"></div>
                     <div class="form-row"><label>Barua pepe</label><input type="email" id="clientEmail" placeholder="mteja@example.com"></div>
                     <div class="form-row"><label>Anuani</label><input type="text" id="clientAddress" placeholder="Dar es Salaam"></div>
-                    <button class="btn" onclick="addClient()">💾 HIFADHI MTEA</button>
+                    <button class="btn" onclick="addClient()">💾 HIFADHI MTEJA</button>
                 </div>
             </div>
 
             <div id="addLoanTab" class="tab-content">
-                <h3 class="section-title">📋 KUTOA MKOPO MPYA</h3>
+                <h3 class="section-title">📋 MKOPO MPYA</h3>
                 <div id="addLoanMsg"></div>
                 <div class="form-card">
                     <div class="form-row"><label>Mteja *</label><select id="loanClientId"></select></div>
@@ -359,7 +323,7 @@
             </div>
 
             <div id="makePaymentTab" class="tab-content">
-                <h3 class="section-title">💸 KULIPA MKOPO</h3>
+                <h3 class="section-title">💸 LIPA MKOPO</h3>
                 <div id="paymentMsg"></div>
                 <div class="form-card">
                     <div class="form-row"><label>Chagua mkopo *</label><select id="paymentLoanId"></select></div>
@@ -386,11 +350,10 @@
     </div>
 
     <script>
-        const API_URL = 'https://scholastica-finance-api.onrender.com';
+        const API_URL = window.location.origin;
         let token = localStorage.getItem('token');
         let loansChart, paymentsChart;
 
-        // Check if user is already logged in
         if (token) { 
             showDashboard(); 
         } else {
@@ -442,7 +405,6 @@
             document.getElementById('dashboardSection').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'block';
             await loadDashboard();
-            await loadTrends();
             await loadClients();
             await loadLoans();
             await loadDefaulters();
@@ -476,54 +438,6 @@
                         <div class="stat-card"><h3>WADAIWA SUGU</h3><div class="stat-number warning">${data.data.defaulters.toLocaleString()}</div></div>
                         <div class="stat-card"><h3>RIBA</h3><div class="stat-number success">TZS ${data.data.totalInterest.toLocaleString()}</div></div>
                     `;
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        async function loadTrends() {
-            try {
-                const res = await fetch(`${API_URL}/api/reports/trend`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                if (data.success) {
-                    const loanMonths = data.data.loans.map(l => l.month);
-                    const loanTotals = data.data.loans.map(l => l.total);
-                    const paymentMonths = data.data.payments.map(p => p.month);
-                    const paymentTotals = data.data.payments.map(p => p.total);
-                    
-                    if (loansChart) loansChart.destroy();
-                    if (paymentsChart) paymentsChart.destroy();
-                    
-                    loansChart = new Chart(document.getElementById('loansChart'), {
-                        type: 'line', 
-                        data: { 
-                            labels: loanMonths.length ? loanMonths : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'], 
-                            datasets: [{ 
-                                label: 'Jumla ya Mikopo (TZS)', 
-                                data: loanTotals.length ? loanTotals : [0,0,0,0,0,0], 
-                                borderColor: '#1a4a7a', 
-                                backgroundColor: 'rgba(26,74,122,0.1)', 
-                                fill: true, 
-                                tension: 0.4 
-                            }] 
-                        },
-                        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
-                    });
-                    
-                    paymentsChart = new Chart(document.getElementById('paymentsChart'), {
-                        type: 'line', 
-                        data: { 
-                            labels: paymentMonths.length ? paymentMonths : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'], 
-                            datasets: [{ 
-                                label: 'Jumla ya Malipo (TZS)', 
-                                data: paymentTotals.length ? paymentTotals : [0,0,0,0,0,0], 
-                                borderColor: '#27ae60', 
-                                backgroundColor: 'rgba(39,174,96,0.1)', 
-                                fill: true, 
-                                tension: 0.4 
-                            }] 
-                        },
-                        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
-                    });
                 }
             } catch (err) { console.error(err); }
         }
@@ -734,7 +648,7 @@
                 if (data.success) {
                     msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mkopo umetolewa!</div>';
                     document.getElementById('loanAmount').value = ''; document.getElementById('loanInterest').value = '5'; document.getElementById('loanDuration').value = '6';
-                    loadLoans(); loadLoansForPayment(); loadDashboard(); loadDefaulters(); loadUpcoming(); loadTrends();
+                    loadLoans(); loadLoansForPayment(); loadDashboard(); loadDefaulters(); loadUpcoming();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
                 } else { msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`; }
             } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
@@ -756,7 +670,7 @@
                 if (data.success) {
                     msgDiv.innerHTML = `<div class="alert-message alert-success">✅ Malipo yamekamilika! Salio: TZS ${Number(data.data.remaining_balance).toLocaleString()}</div>`;
                     document.getElementById('paymentAmount').value = '';
-                    loadLoans(); loadLoansForPayment(); loadPayments(); loadDashboard(); loadDefaulters(); loadUpcoming(); loadTrends();
+                    loadLoans(); loadLoansForPayment(); loadPayments(); loadDashboard(); loadDefaulters(); loadUpcoming();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
                 } else { msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`; }
             } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
@@ -822,7 +736,7 @@
         }
 
         async function deleteClient(id) {
-            if (confirm('Una uhakika unataka kumfuta mteja huyu? Hatua haiwezi kubatilishwa.')) {
+            if (confirm('Una uhakika unataka kumfuta mteja huyu kabisa? Hatua haiwezi kubatilishwa.')) {
                 try {
                     const res = await fetch(`${API_URL}/api/clients/${id}`, {
                         method: 'DELETE',
@@ -832,7 +746,7 @@
                     if (data.success) {
                         loadClients();
                         loadDashboard();
-                        alert('Mteja amefutwa!');
+                        alert('Mteja amefutwa kabisa kwenye database!');
                     } else { alert(data.message); }
                 } catch (err) { alert('Tatizo la seva'); }
             }
