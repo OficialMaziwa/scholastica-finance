@@ -287,53 +287,69 @@ app.get('/api/payments/all', async (req, res) => {
 });
 
 app.post('/api/payments', async (req, res) => {
-    const { loan_id, amount, payment_date, payment_method } = req.body;
-
+    const { loan_id, amount, payment_method, payment_date } = req.body;
+    
+    console.log('💰 Payment request:', { loan_id, amount });
+    
     if (!loan_id || !amount) {
-        return res.status(400).json({ success: false, message: 'Loan ID na amount vinahitajika' });
+        return res.status(400).json({ success: false, message: 'Loan ID na amount required' });
     }
-
-    const client = await pool.connect();
-
+    
     try {
-        await client.query('BEGIN');
-
-        const loanResult = await client.query(`SELECT * FROM loans WHERE id = $1 FOR UPDATE`, [loan_id]);
-        if (loanResult.rows.length === 0) {
-            await client.query('ROLLBACK');
+        // 1. Check if loan exists
+        const loanCheck = await pool.query('SELECT id, total_amount FROM loans WHERE id = $1', [loan_id]);
+        if (loanCheck.rows.length === 0) {
             return res.status(404).json({ success: false, message: 'Loan not found' });
         }
-
-        const loan = loanResult.rows[0];
-        const paymentAmount = parseFloat(amount);
-        const newRepaid = parseFloat(loan.amount_repaid) + paymentAmount;
-        const newRemaining = parseFloat(loan.total_amount) - newRepaid;
-        const newStatus = newRemaining <= 0 ? 'completed' : loan.status;
-        const receiptNumber = `RCP${Date.now()}`;
-
-        await client.query(
-            `INSERT INTO payments (loan_id, amount, payment_date, receipt_number, payment_method) 
-             VALUES ($1, $2, $3, $4, $5)`,
-            [loan_id, paymentAmount, payment_date || new Date().toISOString().split('T')[0], receiptNumber, payment_method || 'cash']
+        
+        // 2. Insert payment
+        const insertResult = await pool.query(
+            `INSERT INTO payments (loan_id, amount, payment_date, payment_method) 
+             VALUES ($1, $2, COALESCE($3, CURRENT_DATE), COALESCE($4, 'cash'))
+             RETURNING *`,
+            [loan_id, amount, payment_date || null, payment_method]
         );
-
-        await client.query(
-            `UPDATE loans SET amount_repaid = $1, remaining_balance = $2, status = $3 WHERE id = $4`,
-            [newRepaid, newRemaining, newStatus, loan_id]
+        
+        // 3. Calculate new totals
+        const totals = await pool.query(
+            `SELECT COALESCE(SUM(amount), 0) as total_paid FROM payments WHERE loan_id = $1`,
+            [loan_id]
         );
-
-        await client.query('COMMIT');
-
+        
+        const totalPaid = parseFloat(totals.rows[0].total_paid);
+        const totalAmount = parseFloat(loanCheck.rows[0].total_amount);
+        const newBalance = totalAmount - totalPaid;
+        const newStatus = newBalance <= 0 ? 'completed' : 'active';
+        
+        // 4. Update loan
+        await pool.query(
+            `UPDATE loans 
+             SET amount_repaid = $1, 
+                 remaining_balance = $2, 
+                 status = $3 
+             WHERE id = $4`,
+            [totalPaid, newBalance, newStatus, loan_id]
+        );
+        
+        console.log('✅ Payment recorded:', { loan_id, amount, newBalance });
+        
         res.json({
             success: true,
             message: 'Payment recorded successfully',
-            data: { remaining_balance: newRemaining, status: newStatus, receipt_number: receiptNumber }
+            data: {
+                payment: insertResult.rows[0],
+                remaining_balance: newBalance,
+                status: newStatus
+            }
         });
+        
     } catch (error) {
-        await client.query('ROLLBACK');
-        res.status(500).json({ success: false, message: 'Server error' });
-    } finally {
-        client.release();
+        console.error('❌ Payment error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message,
+            details: error.stack 
+        });
     }
 });
 
