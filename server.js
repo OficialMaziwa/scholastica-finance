@@ -54,11 +54,57 @@ async function calculateAndUpdatePenalty(loanId) {
     return roundedPenalty;
 }
 
+// SMS Alert function (simulated - you can integrate with actual SMS API)
+async function sendSMSAlert(phoneNumber, message) {
+    const adminPhone = '0762004163';
+    console.log(`📱 SMS ALERT would be sent to: ${phoneNumber}`);
+    console.log(`📝 Message: ${message}`);
+    console.log(`📋 Copy also sent to admin: ${adminPhone}`);
+    
+    // Here you can integrate with actual SMS API like Africa's Talking, Twilio, etc.
+    // For now, we just log and store in database
+    return true;
+}
+
+// Check and send alerts for loans due in 5 days
+async function checkAndSendAlerts() {
+    try {
+        const result = await pool.query(`
+            SELECT l.*, c.full_name as client_name, c.phone_number 
+            FROM loans l
+            JOIN clients c ON l.client_id = c.id
+            WHERE l.status = 'active' 
+              AND (l.due_date - CURRENT_DATE) BETWEEN 1 AND 5
+              AND l.status != 'completed'
+        `);
+        
+        for (const loan of result.rows) {
+            const daysRemaining = Math.ceil((new Date(loan.due_date) - new Date()) / (1000 * 60 * 60 * 24));
+            if (daysRemaining === 5 || daysRemaining === 3 || daysRemaining === 1) {
+                const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(loan.amount_borrowed).toLocaleString()} utalipwa tarehe ${new Date(loan.due_date).toLocaleDateString()}. Siku ${daysRemaining} zimesalia. Tafadhali lipa kabla ya muda. Asante! - Scholastica Finance`;
+                
+                await sendSMSAlert(loan.phone_number, message);
+                
+                await pool.query(`
+                    INSERT INTO alerts (loan_id, alert_type, message, phone_number, is_sent, days_before)
+                    VALUES ($1, 'due_soon', $2, $3, true, $4)
+                `, [loan.id, message, loan.phone_number, daysRemaining]);
+            }
+        }
+    } catch (error) {
+        console.error('Error sending alerts:', error);
+    }
+}
+
+// Run alert check every hour
+setInterval(checkAndSendAlerts, 60 * 60 * 1000);
+checkAndSendAlerts();
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 
 app.get('/api', (req, res) => {
-    res.json({ success: true, message: 'Scholastica Finance API v2.0', features: ['clients', 'loans', 'payments', 'trends', 'penalties'] });
+    res.json({ success: true, message: 'Scholastica Finance API v2.0' });
 });
 
 app.get('/health', (req, res) => { res.json({ status: 'OK', timestamp: new Date().toISOString() }); });
@@ -143,27 +189,60 @@ app.delete('/api/clients/:id', async (req, res) => {
     try {
         const activeLoans = await pool.query(`SELECT COUNT(*) FROM loans WHERE client_id = $1 AND status = 'active'`, [clientId]);
         if (parseInt(activeLoans.rows[0].count) > 0) {
-            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayotumika. Maliza mikopo kwanza.' });
+            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayotumika' });
         }
         const result = await pool.query(`UPDATE clients SET status = 'deleted', deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`, [clientId]);
         if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
-        res.json({ success: true, message: 'Mteja amefutwa kikamilifu', data: result.rows[0] });
+        res.json({ success: true, message: 'Mteja amefutwa', data: result.rows[0] });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// ==================== LOANS ====================
+// ==================== LOANS WITH SORTING ====================
 app.get('/api/loans/all', async (req, res) => {
+    const { sort } = req.query;
+    let orderBy = 'l.created_at DESC';
+    
+    if (sort === 'days_asc') orderBy = 'days_remaining ASC';
+    else if (sort === 'days_desc') orderBy = 'days_remaining DESC';
+    else if (sort === 'amount_asc') orderBy = 'l.amount_borrowed ASC';
+    else if (sort === 'amount_desc') orderBy = 'l.amount_borrowed DESC';
+    else if (sort === 'due_date_asc') orderBy = 'l.due_date ASC';
+    else if (sort === 'due_date_desc') orderBy = 'l.due_date DESC';
+    
     try {
-        const result = await pool.query(`SELECT l.*, c.full_name as client_full_name, (l.due_date - CURRENT_DATE) as days_remaining, CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue FROM loans l JOIN clients c ON l.client_id = c.id WHERE c.status != 'deleted' ORDER BY l.created_at DESC`);
+        const result = await pool.query(`
+            SELECT l.*, c.full_name as client_full_name, 
+                   (l.due_date - CURRENT_DATE) as days_remaining, 
+                   CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue 
+            FROM loans l 
+            JOIN clients c ON l.client_id = c.id 
+            WHERE c.status != 'deleted' 
+            ORDER BY ${orderBy}
+        `);
         for (const loan of result.rows) if (loan.status === 'active' && loan.days_overdue > 0) await calculateAndUpdatePenalty(loan.id);
-        const updatedResult = await pool.query(`SELECT l.*, c.full_name as client_full_name, (l.due_date - CURRENT_DATE) as days_remaining, CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue FROM loans l JOIN clients c ON l.client_id = c.id WHERE c.status != 'deleted' ORDER BY l.created_at DESC`);
+        const updatedResult = await pool.query(`
+            SELECT l.*, c.full_name as client_full_name, 
+                   (l.due_date - CURRENT_DATE) as days_remaining, 
+                   CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue 
+            FROM loans l 
+            JOIN clients c ON l.client_id = c.id 
+            WHERE c.status != 'deleted' 
+            ORDER BY ${orderBy}
+        `);
         res.json({ success: true, data: updatedResult.rows });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.get('/api/loans/defaulters', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT l.*, c.full_name as client_full_name, c.phone_number as client_phone, (CURRENT_DATE - l.due_date) as days_overdue FROM loans l JOIN clients c ON l.client_id = c.id WHERE l.status = 'active' AND CURRENT_DATE > l.due_date AND c.status != 'deleted' ORDER BY l.due_date ASC`);
+        const result = await pool.query(`
+            SELECT l.*, c.full_name as client_full_name, c.phone_number as client_phone, 
+                   (CURRENT_DATE - l.due_date) as days_overdue 
+            FROM loans l 
+            JOIN clients c ON l.client_id = c.id 
+            WHERE l.status = 'active' AND CURRENT_DATE > l.due_date AND c.status != 'deleted' 
+            ORDER BY l.due_date ASC
+        `);
         for (const loan of result.rows) { const penalty = await calculateAndUpdatePenalty(loan.id); loan.total_penalty = penalty; }
         res.json({ success: true, data: result.rows });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
@@ -171,9 +250,14 @@ app.get('/api/loans/defaulters', async (req, res) => {
 
 app.get('/api/loans/upcoming', async (req, res) => {
     try {
-        const alertDaysResult = await pool.query(`SELECT setting_value FROM settings WHERE setting_key = 'alert_days'`);
-        const alertDays = parseInt(alertDaysResult.rows[0]?.setting_value || 3);
-        const result = await pool.query(`SELECT l.*, c.full_name as client_full_name, c.phone_number as client_phone, (l.due_date - CURRENT_DATE) as days_remaining FROM loans l JOIN clients c ON l.client_id = c.id WHERE l.status = 'active' AND CURRENT_DATE <= l.due_date AND (l.due_date - CURRENT_DATE) <= $1 AND c.status != 'deleted' ORDER BY l.due_date ASC`, [alertDays]);
+        const result = await pool.query(`
+            SELECT l.*, c.full_name as client_full_name, c.phone_number as client_phone, 
+                   (l.due_date - CURRENT_DATE) as days_remaining 
+            FROM loans l 
+            JOIN clients c ON l.client_id = c.id 
+            WHERE l.status = 'active' AND CURRENT_DATE <= l.due_date AND (l.due_date - CURRENT_DATE) <= 5 AND c.status != 'deleted' 
+            ORDER BY l.due_date ASC
+        `);
         res.json({ success: true, data: result.rows });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
@@ -215,11 +299,11 @@ app.post('/api/payments', async (req, res) => {
         const newStatus = newBalance <= 0 ? 'completed' : 'active';
         if (newStatus !== updatedLoan.rows[0].status && newStatus === 'completed') await pool.query(`UPDATE loans SET status = $1 WHERE id = $2`, [newStatus, loan_id]);
         await pool.query(`UPDATE loans SET penalty_amount = 0, days_overdue = 0 WHERE id = $1`, [loan_id]);
-        res.json({ success: true, message: 'Malipo yamekamilika kikamilifu', data: { payment: insertResult.rows[0], remaining_balance: newBalance, status: newStatus, amount_repaid: totalPaid } });
+        res.json({ success: true, message: 'Malipo yamekamilika', data: { payment: insertResult.rows[0], remaining_balance: newBalance, status: newStatus, amount_repaid: totalPaid } });
     } catch (error) { console.error('Payment error:', error); res.status(500).json({ success: false, message: error.message }); }
 });
 
-// ==================== TRENDS & REPORTS ====================
+// ==================== REPORTS ====================
 app.get('/api/reports/dashboard', async (req, res) => {
     try {
         const totalClients = await pool.query(`SELECT COUNT(*) FROM clients WHERE status = 'active'`);
@@ -249,10 +333,22 @@ app.get('/api/reports/dashboard', async (req, res) => {
 
 app.get('/api/reports/trend', async (req, res) => {
     try {
-        const loanTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month, COUNT(*) as count, COALESCE(SUM(amount_borrowed), 0) as total FROM loans WHERE created_at >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', created_at) ORDER BY DATE_TRUNC('month', created_at) ASC`);
-        const paymentTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', payment_date), 'Mon YYYY') as month, COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_date >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', payment_date) ORDER BY DATE_TRUNC('month', payment_date) ASC`);
+        const loanTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month, COALESCE(SUM(amount_borrowed), 0) as total FROM loans WHERE created_at >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', created_at) ORDER BY DATE_TRUNC('month', created_at) ASC`);
+        const paymentTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', payment_date), 'Mon YYYY') as month, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_date >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', payment_date) ORDER BY DATE_TRUNC('month', payment_date) ASC`);
         res.json({ success: true, data: { loans: loanTrend.rows, payments: paymentTrend.rows } });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
+});
+
+// Manual trigger for SMS alerts
+app.post('/api/send-alert', async (req, res) => {
+    const { loan_id, phone_number, message } = req.body;
+    try {
+        await sendSMSAlert(phone_number, message);
+        await pool.query(`INSERT INTO alerts (loan_id, alert_type, message, phone_number, is_sent) VALUES ($1, 'manual', $2, $3, true)`, [loan_id, message, phone_number]);
+        res.json({ success: true, message: 'Alert sent successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'Endpoint haipatikani' }); });
@@ -261,5 +357,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { 
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
     console.log(`📍 Frontend: http://localhost:${PORT}/`);
-    console.log(`📍 Health: http://localhost:${PORT}/health`);
 });
