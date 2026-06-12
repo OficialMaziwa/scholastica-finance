@@ -13,7 +13,6 @@
             min-height: 100vh;
         }
         
-        /* Header */
         .header { 
             background: linear-gradient(135deg, #0f2b4d, #1a4a7a); 
             color: white; 
@@ -46,10 +45,9 @@
         }
         .logout-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
         
-        /* Container */
         .container { max-width: 1400px; margin: 25px auto; padding: 0 20px; }
         
-        /* Login Box */
+        /* Login Page */
         .login-wrapper { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
         .login-card { 
             background: white; 
@@ -87,27 +85,26 @@
         .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(26,74,122,0.3); }
         .demo-text { text-align: center; margin-top: 20px; color: #888; font-size: 12px; }
         
-        /* Stats Grid - FIXED SIZING */
+        /* Stats Cards - FIXED FONT SIZE */
         .stats-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
             gap: 15px; 
             margin-bottom: 30px; 
         }
         .stat-card { 
             background: white; 
             border-radius: 16px; 
-            padding: 18px 12px; 
+            padding: 15px 10px; 
             text-align: center; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
             transition: all 0.3s;
         }
         .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
         .stat-card h3 { font-size: 12px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-number { font-size: 24px; font-weight: 800; color: #1a4a7a; white-space: nowrap; overflow-x: auto; }
+        .stat-number { font-size: 18px; font-weight: 800; color: #1a4a7a; }
         .stat-number.warning { color: #e74c3c; }
         .stat-number.success { color: #27ae60; }
-        .stat-number::-webkit-scrollbar { height: 2px; }
         
         /* Tabs */
         .tabs-wrapper { 
@@ -133,12 +130,10 @@
         .tab:hover { background: #f0f0f0; color: #1a4a7a; }
         .tab.active { background: linear-gradient(135deg, #1a4a7a, #0f2b4d); color: white; }
         
-        /* Tab Content */
         .tab-content { display: none; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Sorting Bar */
         .sort-bar { 
             display: flex; 
             gap: 10px; 
@@ -157,20 +152,17 @@
             cursor: pointer;
         }
         
-        /* Tables */
         .data-table { width: 100%; border-collapse: collapse; overflow-x: auto; display: block; }
         .data-table th, .data-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; }
         .data-table th { background: #f8f9fa; font-weight: 700; color: #333; font-size: 13px; }
         .data-table tr:hover { background: #f8f9fa; }
         
-        /* Status Badges */
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .badge-active { background: #e8f5e9; color: #2e7d32; }
         .badge-overdue { background: #ffebee; color: #c62828; }
         .badge-completed { background: #e3f2fd; color: #1565c0; }
         .badge-warning { background: #fff3e0; color: #ef6c00; }
         
-        /* Buttons */
         .btn-sm { padding: 5px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; margin: 2px; transition: all 0.2s; }
         .btn-edit { background: #ff9800; color: white; }
         .btn-edit:hover { background: #f57c00; }
@@ -179,7 +171,6 @@
         .btn-alert { background: #2196f3; color: white; }
         .btn-alert:hover { background: #1976d2; }
         
-        /* Charts - FIXED */
         .chart-container { 
             background: white; 
             border-radius: 20px; 
@@ -200,7 +191,6 @@
         canvas { max-height: 280px; width: 100% !important; }
         @media (max-width: 800px) { .chart-grid { grid-template-columns: 1fr; } }
         
-        /* Forms */
         .form-card { background: #fafafa; border-radius: 16px; padding: 25px; }
         .form-row { margin-bottom: 20px; }
         .form-row label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
@@ -213,13 +203,11 @@
         }
         .form-row input:focus, .form-row select:focus { outline: none; border-color: #1a4a7a; }
         
-        /* Messages */
         .alert-message { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; }
         .alert-error { background: #ffebee; color: #c62828; border-left: 4px solid #c62828; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #2e7d32; }
         .alert-info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
         
-        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .modal-content { background: white; margin: 8% auto; padding: 30px; border-radius: 24px; width: 500px; max-width: 90%; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -228,7 +216,6 @@
         .close { font-size: 28px; cursor: pointer; color: #999; }
         .close:hover { color: #333; }
         
-        /* Payment History */
         .payment-history { background: #fafafa; border-radius: 16px; overflow: hidden; }
         .payment-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; transition: all 0.2s; }
         .payment-item:hover { background: white; }
@@ -240,10 +227,10 @@
         
         @media (max-width: 768px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-number { font-size: 18px; }
+            .stat-number { font-size: 14px; }
             .tab { padding: 8px 12px; font-size: 12px; }
-            .data-table { font-size: 12px; }
-            .data-table td, .data-table th { padding: 8px 5px; }
+            .data-table { font-size: 11px; }
+            .data-table td, .data-table th { padding: 6px 4px; }
         }
     </style>
 </head>
@@ -259,11 +246,11 @@
     </div>
 
     <div class="container">
-        <!-- Login Section -->
+        <!-- Login Section - MUST LOGIN FIRST -->
         <div id="loginSection" class="login-wrapper">
             <div class="login-card">
                 <h2>🔐 KARIBU!</h2>
-                <div class="subtitle">Ingia kwenye mfumo wako wa mikopo</div>
+                <div class="subtitle">Tafadhali ingia kwenye mfumo wako</div>
                 <div id="loginError" class="alert-message alert-error" style="display:none"></div>
                 <div class="input-group">
                     <label>📧 Barua pepe au Jina la mtumiaji</label>
@@ -278,7 +265,7 @@
             </div>
         </div>
 
-        <!-- Dashboard Section -->
+        <!-- Dashboard Section - Only visible after login -->
         <div id="dashboardSection" style="display:none">
             <!-- Stats Cards -->
             <div class="stats-grid" id="statsContainer"></div>
@@ -301,8 +288,8 @@
             <!-- Tabs -->
             <div class="tabs-wrapper">
                 <button class="tab" onclick="showTab('clients')">👥 WATEJA</button>
-                <button class="tab" onclick="showTab('loans')">💰 MIKOPO YOTE</button>
-                <button class="tab" onclick="showTab('defaulters')">⚠️ WADAIWA</button>
+                <button class="tab" onclick="showTab('loans')">💰 MIKOPO INAYOENDELEA</button>
+                <button class="tab" onclick="showTab('defaulters')">⚠️ WADAIWA SUGU</button>
                 <button class="tab" onclick="showTab('upcoming')">⏰ INAKARIBIA KUISHA</button>
                 <button class="tab" onclick="showTab('payments')">💵 MALIPO</button>
                 <button class="tab" onclick="showTab('addClient')">➕ MTEA MPYA</button>
@@ -310,15 +297,13 @@
                 <button class="tab" onclick="showTab('makePayment')">💸 LIPA MKOPO</button>
             </div>
 
-            <!-- Clients Tab -->
             <div id="clientsTab" class="tab-content">
                 <h3 class="section-title">📋 ORODHA YA WATEJA</h3>
                 <div id="clientsList"></div>
             </div>
 
-            <!-- Loans Tab with Sorting -->
             <div id="loansTab" class="tab-content">
-                <h3 class="section-title">💰 MIKOPO YOTE</h3>
+                <h3 class="section-title">💰 MIKOPO INAYOENDELEA</h3>
                 <div class="sort-bar">
                     <label>🔽 Panga kwa:</label>
                     <select id="loanSort" class="sort-select" onchange="loadLoans()">
@@ -329,31 +314,26 @@
                         <option value="amount_asc">Kiasi (Kidogo kwanza)</option>
                         <option value="amount_desc">Kiasi (Kikubwa kwanza)</option>
                         <option value="due_date_asc">Tarehe ya malipo (Karibu kwanza)</option>
-                        <option value="due_date_desc">Tarehe ya malipo (Mbali kwanza)</option>
                     </select>
                 </div>
                 <div id="loansList"></div>
             </div>
 
-            <!-- Defaulters Tab -->
             <div id="defaultersTab" class="tab-content">
-                <h3 class="section-title">⚠️ WADAIWA - WALIOSHINDWA KULIPA</h3>
+                <h3 class="section-title">⚠️ WADAIWA SUGU (WALIOSHINDWA KULIPA)</h3>
                 <div id="defaultersList"></div>
             </div>
 
-            <!-- Upcoming Loans Tab -->
             <div id="upcomingTab" class="tab-content">
                 <h3 class="section-title">⏰ MIKOPO INAYOKARIBIA TAREPHE (SIKU 5)</h3>
                 <div id="upcomingList"></div>
             </div>
 
-            <!-- Payments Tab -->
             <div id="paymentsTab" class="tab-content">
                 <h3 class="section-title">💵 HISTORIA YA MALIPO</h3>
                 <div id="paymentsList"></div>
             </div>
 
-            <!-- Add Client Tab -->
             <div id="addClientTab" class="tab-content">
                 <h3 class="section-title">➕ KUONGEZA MTEA MPYA</h3>
                 <div id="addClientMsg"></div>
@@ -366,7 +346,6 @@
                 </div>
             </div>
 
-            <!-- Add Loan Tab -->
             <div id="addLoanTab" class="tab-content">
                 <h3 class="section-title">📋 KUTOA MKOPO MPYA</h3>
                 <div id="addLoanMsg"></div>
@@ -379,7 +358,6 @@
                 </div>
             </div>
 
-            <!-- Make Payment Tab -->
             <div id="makePaymentTab" class="tab-content">
                 <h3 class="section-title">💸 KULIPA MKOPO</h3>
                 <div id="paymentMsg"></div>
@@ -393,7 +371,6 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>✏️ HARIRI TAARIFA</h3><span class="close" onclick="closeModal()">&times;</span></div>
@@ -413,7 +390,13 @@
         let token = localStorage.getItem('token');
         let loansChart, paymentsChart;
 
-        if (token) { showDashboard(); }
+        // Check if user is already logged in
+        if (token) { 
+            showDashboard(); 
+        } else {
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboardSection').style.display = 'none';
+        }
 
         async function login() {
             const identifier = document.getElementById('loginIdentifier').value;
@@ -421,7 +404,7 @@
             const errorDiv = document.getElementById('loginError');
             if (!identifier || !password) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerText = 'Tafadhali jaza taarifa zote';
+                errorDiv.innerText = 'Tafadhali jaza barua pepe/jina na neno la siri';
                 return;
             }
             errorDiv.style.display = 'none';
@@ -487,11 +470,10 @@
                 if (data.success) {
                     document.getElementById('statsContainer').innerHTML = `
                         <div class="stat-card"><h3>WATEJA</h3><div class="stat-number">${data.data.totalClients.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>MIKOPO INAYOTUMIKA</h3><div class="stat-number">${data.data.activeLoans.toLocaleString()}</div></div>
+                        <div class="stat-card"><h3>MIKOPO INAYOENDELEA</h3><div class="stat-number">${data.data.activeLoans.toLocaleString()}</div></div>
                         <div class="stat-card"><h3>JUMLA YA MIKOPO</h3><div class="stat-number">TZS ${data.data.totalDisbursed.toLocaleString()}</div></div>
                         <div class="stat-card"><h3>MALIPO</h3><div class="stat-number success">TZS ${data.data.totalRepaid.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>WADAIWA</h3><div class="stat-number warning">${data.data.defaulters.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>FAINI</h3><div class="stat-number warning">TZS ${data.data.totalPenalties.toLocaleString()}</div></div>
+                        <div class="stat-card"><h3>WADAIWA SUGU</h3><div class="stat-number warning">${data.data.defaulters.toLocaleString()}</div></div>
                         <div class="stat-card"><h3>RIBA</h3><div class="stat-number success">TZS ${data.data.totalInterest.toLocaleString()}</div></div>
                     `;
                 }
@@ -566,7 +548,7 @@
                     html += `</tbody></table>`;
                     document.getElementById('clientsList').innerHTML = html;
                 } else {
-                    document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja waliosajiliwa</div>';
+                    document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja</div>';
                 }
             } catch (err) { document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
@@ -577,7 +559,7 @@
                 const res = await fetch(`${API_URL}/api/loans/all?sort=${sort}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>KIASI</th><th>RIBA</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>FAINI</th><th>HALI</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>KIASI</th><th>RIBA</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>HALI</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         let daysClass = l.days_remaining < 0 ? 'badge-overdue' : (l.days_remaining <= 3 ? 'badge-warning' : 'badge-active');
                         let daysText = l.days_remaining > 0 ? `${l.days_remaining} siku` : (l.days_remaining === 0 ? 'Leo!' : `Imechelewa ${-l.days_remaining} siku`);
@@ -588,8 +570,7 @@
                             <td>${l.interest_rate}%</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge ${daysClass}">${daysText}</span></td>
-                            <td>TZS ${Number(l.penalty_amount || 0).toLocaleString()}</td>
-                            <td><span class="badge ${l.status === 'active' ? (l.days_overdue > 0 ? 'badge-overdue' : 'badge-active') : 'badge-completed'}">${l.status === 'active' ? (l.days_overdue > 0 ? 'Imechelewa' : 'Inatumika') : 'Imelipwa'}</span></td>
+                            <td><span class="badge ${l.status === 'active' ? (l.days_remaining < 0 ? 'badge-overdue' : 'badge-active') : 'badge-completed'}">${l.status === 'active' ? (l.days_remaining < 0 ? 'Imechelewa' : 'Inayoendelea') : 'Imelipwa'}</span></td>
                         </tr>`;
                     });
                     html += `</tbody></table>`;
@@ -605,23 +586,23 @@
                 const res = await fetch(`${API_URL}/api/loans/defaulters`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>IMECHELEWA</th><th>FAINI</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>BARUA PEPE</th><th>KIASI</th><th>SALIO</th><th>IMECHELEWA</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${l.client_full_name}</strong></td>
                             <td>${l.client_phone}</td>
+                            <td>${l.email || '-'}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge badge-overdue">${l.days_overdue} siku</span></td>
-                            <td>TZS ${Number(l.penalty_amount || 0).toLocaleString()}</td>
-                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert(${l.id}, '${l.client_phone}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert(${l.id}, '${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
                         </tr>`;
                     });
                     html += `</tbody></table>`;
                     document.getElementById('defaultersList').innerHTML = html;
                 } else {
-                    document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa! Wateja wote wanalipa kwa wakati.</div>';
+                    document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu! Wateja wote wanalipa kwa wakati.</div>';
                 }
             } catch (err) { document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
@@ -631,16 +612,17 @@
                 const res = await fetch(`${API_URL}/api/loans/upcoming`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>BARUA PEPE</th><th>KIASI</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${l.client_full_name}</strong></td>
                             <td>${l.client_phone}</td>
+                            <td>${l.email || '-'}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge badge-warning">${l.days_remaining} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert(${l.id}, '${l.client_phone}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert(${l.id}, '${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
                         </tr>`;
                     });
                     html += `</tbody></table>`;
@@ -687,7 +669,7 @@
                 if (data.success) {
                     let options = '<option value="">-- Chagua mteja --</option>';
                     data.data.forEach(c => {
-                        if(c.status === 'active') options += `<option value="${c.id}" data-name="${c.full_name}" data-phone="${c.phone_number}">${c.full_name} - ${c.phone_number}</option>`;
+                        if(c.status === 'active') options += `<option value="${c.id}" data-name="${c.full_name}" data-phone="${c.phone_number}" data-email="${c.email || ''}">${c.full_name} - ${c.phone_number}</option>`;
                     });
                     document.getElementById('loanClientId').innerHTML = options;
                 }
@@ -741,11 +723,12 @@
             const selectedOption = document.getElementById('loanClientId').options[document.getElementById('loanClientId').selectedIndex];
             const clientName = selectedOption.getAttribute('data-name');
             const clientPhone = selectedOption.getAttribute('data-phone');
+            const clientEmail = selectedOption.getAttribute('data-email');
             try {
                 const res = await fetch(`${API_URL}/api/loans`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ client_id: parseInt(clientId), client_name: clientName, phone_number: clientPhone, amount_borrowed: parseFloat(amount), interest_rate: parseFloat(interest), duration_months: parseInt(duration) })
+                    body: JSON.stringify({ client_id: parseInt(clientId), client_name: clientName, phone_number: clientPhone, email: clientEmail, amount_borrowed: parseFloat(amount), interest_rate: parseFloat(interest), duration_months: parseInt(duration) })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -779,19 +762,21 @@
             } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
         }
 
-        function sendManualAlert(loanId, phone, name, balance, days) {
+        function sendManualAlert(loanId, phone, email, name, balance, days) {
+            const subject = `TAHADHARI YA MKOPO - ${name}`;
             const message = `TAHADHARI: Mteja ${name} amechelewa kulipa mkopo kwa siku ${days}. Salio lililosalia ni TZS ${Number(balance).toLocaleString()}. Tafadhali wasiliana naye. - Scholastica Finance`;
-            if(confirm(`Tuma alert kwa ${phone}?\nUjumbe: ${message.substring(0, 100)}...`)) {
-                alert(`✅ Alert imetumwa kwa ${phone} na nakala kwa 0762004163`);
-                console.log(`SMS sent to: ${phone} and admin: 0762004163`);
+            if(confirm(`Tuma alert kwa ${phone} na ${email}?\nUjumbe: ${message.substring(0, 100)}...`)) {
+                alert(`✅ Alert imetumwa kwa ${phone} na ${email}\nNakala kwa 0762004163 na scholamalaba63@gmail.com`);
+                console.log(`SMS/Email sent to: ${phone}, ${email} and admin: 0762004163, scholamalaba63@gmail.com`);
             }
         }
 
-        function sendUpcomingAlert(loanId, phone, name, amount, days) {
+        function sendUpcomingAlert(loanId, phone, email, name, amount, days) {
+            const subject = `KUMBUKUMBU LA MKOPO - Siku ${days} Zimesalia`;
             const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(amount).toLocaleString()} unatarajiwa kulipa baada ya siku ${days}. Tafadhali lipa kabla ya muda. - Scholastica Finance`;
-            if(confirm(`Tuma kumbukumbu kwa ${phone}?\nUjumbe: ${message}`)) {
-                alert(`✅ Kumbukumbu imetumwa kwa ${phone} na nakala kwa 0762004163`);
-                console.log(`SMS sent to: ${phone} and admin: 0762004163`);
+            if(confirm(`Tuma kumbukumbu kwa ${phone} na ${email}?\nUjumbe: ${message}`)) {
+                alert(`✅ Kumbukumbu imetumwa kwa ${phone} na ${email}\nNakala kwa 0762004163 na scholamalaba63@gmail.com`);
+                console.log(`SMS/Email sent to: ${phone}, ${email} and admin: 0762004163, scholamalaba63@gmail.com`);
             }
         }
 

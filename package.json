@@ -1,6 +1,6 @@
 {
   "name": "scholastica-finance",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Scholastica Finance - Microfinance Loan Management System",
   "main": "server.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.7"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
