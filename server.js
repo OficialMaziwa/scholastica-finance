@@ -43,7 +43,38 @@ function formatPhoneNumber(phone) {
     return num;
 }
 
-// Auth endpoints
+// ==================== ROOT ENDPOINT ====================
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Scholastica Finance API',
+        version: '1.0.0',
+        status: 'running',
+        endpoints: {
+            health: 'GET /health',
+            clients: 'GET /api/clients',
+            clients_post: 'POST /api/clients',
+            loans: 'GET /api/loans/all',
+            loans_post: 'POST /api/loans',
+            payments: 'POST /api/payments',
+            dashboard: 'GET /api/reports/dashboard',
+            login: 'POST /api/auth/login',
+            register: 'POST /api/auth/register'
+        }
+    });
+});
+
+// ==================== HEALTH CHECK ====================
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'OK',
+        message: 'Scholastica Finance API is running',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
+// ==================== AUTH ENDPOINTS ====================
 app.post('/api/auth/register', async (req, res) => {
     const { username, email, password, full_name, role } = req.body;
 
@@ -113,11 +144,23 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// Clients endpoints
+// ==================== CLIENTS ENDPOINTS ====================
 app.get('/api/clients', async (req, res) => {
     try {
         const result = await pool.query(`SELECT * FROM clients ORDER BY created_at DESC`);
         res.json({ success: true, data: result.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+app.get('/api/clients/:id', async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT * FROM clients WHERE id = $1`, [req.params.id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Client not found' });
+        }
+        res.json({ success: true, data: result.rows[0] });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
@@ -148,7 +191,7 @@ app.post('/api/clients', async (req, res) => {
     }
 });
 
-// Loans endpoints
+// ==================== LOANS ENDPOINTS ====================
 app.get('/api/loans/all', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -157,6 +200,17 @@ app.get('/api/loans/all', async (req, res) => {
                    l.total_amount, l.amount_repaid, l.remaining_balance,
                    l.start_date, l.due_date, l.status, l.created_at
             FROM loans l ORDER BY l.created_at DESC
+        `);
+        res.json({ success: true, data: result.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+app.get('/api/loans/active', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT * FROM loans WHERE status = 'active' ORDER BY due_date ASC
         `);
         res.json({ success: true, data: result.rows });
     } catch (error) {
@@ -195,7 +249,34 @@ app.post('/api/loans', async (req, res) => {
     }
 });
 
-// Payments endpoints
+app.put('/api/loans/:id/status', async (req, res) => {
+    const { status } = req.body;
+    try {
+        const result = await pool.query(`UPDATE loans SET status = $1 WHERE id = $2 RETURNING *`, [status, req.params.id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Loan not found' });
+        }
+        res.json({ success: true, data: result.rows[0] });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// ==================== PAYMENTS ENDPOINTS ====================
+app.get('/api/payments/all', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT p.*, l.client_name, l.phone_number
+            FROM payments p
+            JOIN loans l ON p.loan_id = l.id
+            ORDER BY p.payment_date DESC
+        `);
+        res.json({ success: true, data: result.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 app.post('/api/payments', async (req, res) => {
     const { loan_id, amount, payment_date, payment_method } = req.body;
 
@@ -247,7 +328,16 @@ app.post('/api/payments', async (req, res) => {
     }
 });
 
-// Reports
+app.get('/api/payments/loan/:loanId', async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT * FROM payments WHERE loan_id = $1 ORDER BY payment_date DESC`, [req.params.loanId]);
+        res.json({ success: true, data: result.rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// ==================== REPORTS ENDPOINTS ====================
 app.get('/api/reports/dashboard', async (req, res) => {
     try {
         const totalClients = await pool.query(`SELECT COUNT(*) FROM clients`);
@@ -269,13 +359,22 @@ app.get('/api/reports/dashboard', async (req, res) => {
     }
 });
 
-// Health check
-app.get('/health', (req, res) => {
-    res.json({ status: 'OK', message: 'Scholastica Finance API', timestamp: new Date() });
+// ==================== 404 HANDLER (For unknown routes) ====================
+app.use('*', (req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'Endpoint not found',
+        available_endpoints: {
+            get: ['/', '/health', '/api/clients', '/api/clients/:id', '/api/loans/all', '/api/loans/active', '/api/payments/all', '/api/reports/dashboard'],
+            post: ['/api/auth/register', '/api/auth/login', '/api/clients', '/api/loans', '/api/payments']
+        }
+    });
 });
 
-// Start server
+// ==================== START SERVER ====================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
+    console.log(`📍 Health check: http://localhost:${PORT}/health`);
+    console.log(`📍 Root endpoint: http://localhost:${PORT}/`);
 });
