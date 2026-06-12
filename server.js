@@ -229,11 +229,24 @@ app.get('/api/reports/dashboard', async (req, res) => {
         const defaulters = await pool.query(`SELECT COUNT(*) FROM loans WHERE status = 'active' AND CURRENT_DATE > due_date`);
         const totalPenalties = await pool.query(`SELECT COALESCE(SUM(penalty_amount), 0) as total FROM loans WHERE status = 'active'`);
         const totalInterest = await pool.query(`SELECT COALESCE(SUM(interest_amount), 0) as total FROM loans`);
-        res.json({ success: true, data: { totalClients: parseInt(totalClients.rows[0].count), activeLoans: parseInt(activeLoans.rows[0].count), totalDisbursed: parseFloat(totalDisbursed.rows[0].total), totalRepaid: parseFloat(totalRepaid.rows[0].total), defaulters: parseInt(defaulters.rows[0].count), totalPenalties: parseFloat(totalPenalties.rows[0].total), totalInterest: parseFloat(totalInterest.rows[0].total } });
-    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
+
+        res.json({ 
+            success: true, 
+            data: { 
+                totalClients: parseInt(totalClients.rows[0].count), 
+                activeLoans: parseInt(activeLoans.rows[0].count), 
+                totalDisbursed: parseFloat(totalDisbursed.rows[0].total), 
+                totalRepaid: parseFloat(totalRepaid.rows[0].total), 
+                defaulters: parseInt(defaulters.rows[0].count), 
+                totalPenalties: parseFloat(totalPenalties.rows[0].total), 
+                totalInterest: parseFloat(totalInterest.rows[0].total) 
+            } 
+        });
+    } catch (error) { 
+        res.status(500).json({ success: false, message: 'Server error' }); 
+    }
 });
 
-// TREND DATA for charts (last 6 months)
 app.get('/api/reports/trend', async (req, res) => {
     try {
         const loanTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month, COUNT(*) as count, COALESCE(SUM(amount_borrowed), 0) as total FROM loans WHERE created_at >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', created_at) ORDER BY DATE_TRUNC('month', created_at) ASC`);
@@ -245,4 +258,8 @@ app.get('/api/reports/trend', async (req, res) => {
 app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'Endpoint haipatikani' }); });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => { console.log(`✅ Scholastica Finance API running on port ${PORT}`); });
+app.listen(PORT, () => { 
+    console.log(`✅ Scholastica Finance API running on port ${PORT}`);
+    console.log(`📍 Frontend: http://localhost:${PORT}/`);
+    console.log(`📍 Health: http://localhost:${PORT}/health`);
+});
