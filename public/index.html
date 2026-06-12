@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholastica Finance - Mikopo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .login-box, .dashboard { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #2a5298; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #1e3c72; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #2a5298; color: white; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 32px; font-weight: bold; color: #2a5298; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #ddd; cursor: pointer; border-radius: 5px; }
+        .tab.active { background: #2a5298; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .error { color: red; padding: 10px; background: #ffe0e0; border-radius: 5px; margin-bottom: 15px; }
+        .success { color: green; padding: 10px; background: #e0ffe0; border-radius: 5px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏦 Scholastica Finance</h1>
+        <p>Mfumo wa Usimamizi wa Mikopo</p>
+    </div>
+
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginSection" class="login-box">
+            <h2>Karibu! Tafadhali Ingia</h2>
+            <div id="loginError" class="error" style="display:none"></div>
+            <div class="form-group">
+                <label>Email au Username</label>
+                <input type="text" id="loginIdentifier" placeholder="scholamalaba63@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+            </div>
+            <button onclick="login()">🔐 Ingia</button>
+            <p style="margin-top:15px">Demo: scholamalaba63@gmail.com / Kasenga@23</p>
+        </div>
+
+        <!-- Dashboard (hidden after login) -->
+        <div id="dashboardSection" style="display:none">
+            <div class="stats" id="statsContainer"></div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('clients')">👥 Wateja</div>
+                <div class="tab" onclick="showTab('loans')">💰 Mikopo</div>
+                <div class="tab" onclick="showTab('addClient')">➕ Mteja Mpya</div>
+                <div class="tab" onclick="showTab('addLoan')">📋 Mkopo Mpya</div>
+            </div>
+
+            <div id="clientsTab" class="tab-content active">
+                <div class="login-box">
+                    <h2>📋 Orodha ya Wateja</h2>
+                    <div id="clientsList"></div>
+                </div>
+            </div>
+
+            <div id="loansTab" class="tab-content">
+                <div class="login-box">
+                    <h2>💰 Mikopo Iliyotolewa</h2>
+                    <div id="loansList"></div>
+                </div>
+            </div>
+
+            <div id="addClientTab" class="tab-content">
+                <div class="login-box">
+                    <h2>➕ Kuongeza Mteja Mpya</h2>
+                    <div id="addClientMsg"></div>
+                    <div class="form-group">
+                        <label>Jina Kamili *</label>
+                        <input type="text" id="clientName" placeholder="Mteja Jina">
+                    </div>
+                    <div class="form-group">
+                        <label>Namba ya Simu *</label>
+                        <input type="text" id="clientPhone" placeholder="0712345678 au 255712345678">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="clientEmail" placeholder="mteja@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Anuani</label>
+                        <input type="text" id="clientAddress" placeholder="Anuani">
+                    </div>
+                    <button onclick="addClient()">💾 Hifadhi Mteja</button>
+                </div>
+            </div>
+
+            <div id="addLoanTab" class="tab-content">
+                <div class="login-box">
+                    <h2>📋 Kutoa Mkopo Mpya</h2>
+                    <div id="addLoanMsg"></div>
+                    <div class="form-group">
+                        <label>Mteja *</label>
+                        <select id="loanClientId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kiasi cha Mkopo (TZS) *</label>
+                        <input type="number" id="loanAmount" placeholder="500000">
+                    </div>
+                    <div class="form-group">
+                        <label>Riba (%) *</label>
+                        <input type="number" id="loanInterest" placeholder="5" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Muda (miezi) *</label>
+                        <input type="number" id="loanDuration" placeholder="6" value="6">
+                    </div>
+                    <button onclick="addLoan()">💰 Toa Mkopo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let API_URL = 'https://scholastica-finance-api.onrender.com';
+        let token = null;
+
+        async function login() {
+            const identifier = document.getElementById('loginIdentifier').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (!identifier || !password) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = 'Tafadhali jaza Email/Username na Password';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    token = data.token;
+                    localStorage.setItem('token', token);
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardSection').style.display = 'block';
+                    loadDashboard();
+                    loadClients();
+                    loadLoans();
+                    loadClientsForSelect();
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerText = data.message || 'Login failed';
+                }
+            } catch (err) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = 'Server error. Please try again.';
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch(`${API_URL}/api/reports/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('statsContainer').innerHTML = `
+                        <div class="stat-card"><div class="stat-number">${data.data.totalClients}</div><div>Wateja</div></div>
+                        <div class="stat-card"><div class="stat-number">${data.data.activeLoans}</div><div>Mikopo Inayotumika</div></div>
+                        <div class="stat-card"><div class="stat-number">TZS ${Number(data.data.totalDisbursed).toLocaleString()}</div><div>Jumla ya Mikopo</div></div>
+                        <div class="stat-card"><div class="stat-number">TZS ${Number(data.data.totalRepaid).toLocaleString()}</div><div>Malipo Yaliyopokelewa</div></div>
+                    `;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadClients() {
+            try {
+                const res = await fetch(`${API_URL}/api/clients`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    let html = '<table><tr><th>ID</th><th>Jina Kamili</th><th>Namba ya Simu</th><th>Email</th><th>Anuani</th></tr>';
+                    data.data.forEach(c => {
+                        html += `<tr><td>${c.id}</td><td>${c.full_name}</td><td>${c.phone_number}</td><td>${c.email || '-'}</td><td>${c.address || '-'}</td></tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('clientsList').innerHTML = html;
+                } else {
+                    document.getElementById('clientsList').innerHTML = '<p>Hakuna wateja bado</p>';
+                }
+            } catch (err) { document.getElementById('clientsList').innerHTML = '<p>Error loading clients</p>'; }
+        }
+
+        async function loadLoans() {
+            try {
+                const res = await fetch(`${API_URL}/api/loans/all`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    let html = '<table><tr><th>ID</th><th>Mteja</th><th>Kiasi</th><th>Riba</th><th>Salio</th><th>Status</th><th>Tarehe ya Marejesho</th></tr>';
+                    data.data.forEach(l => {
+                        html += `<tr>
+                            <td>${l.id}</td>
+                            <td>${l.client_name || l.client_id}</td>
+                            <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
+                            <td>${l.interest_rate}%</td>
+                            <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
+                            <td>${l.status}</td>
+                            <td>${new Date(l.due_date).toLocaleDateString()}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('loansList').innerHTML = html;
+                } else {
+                    document.getElementById('loansList').innerHTML = '<p>Hakuna mikopo bado</p>';
+                }
+            } catch (err) { document.getElementById('loansList').innerHTML = '<p>Error loading loans</p>'; }
+        }
+
+        async function loadClientsForSelect() {
+            try {
+                const res = await fetch(`${API_URL}/api/clients`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    let options = '<option value="">--Chagua Mteja--</option>';
+                    data.data.forEach(c => {
+                        options += `<option value="${c.id}" data-name="${c.full_name}" data-phone="${c.phone_number}">${c.full_name} - ${c.phone_number}</option>`;
+                    });
+                    document.getElementById('loanClientId').innerHTML = options;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function addClient() {
+            const name = document.getElementById('clientName').value;
+            const phone = document.getElementById('clientPhone').value;
+            const email = document.getElementById('clientEmail').value;
+            const address = document.getElementById('clientAddress').value;
+            const msgDiv = document.getElementById('addClientMsg');
+
+            if (!name || !phone) {
+                msgDiv.innerHTML = '<div class="error">Jina na Namba ya Simu zinahitajika</div>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/clients`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ full_name: name, phone_number: phone, email, address })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.innerHTML = '<div class="success">✅ Mteja ameongezwa kikamilifu!</div>';
+                    document.getElementById('clientName').value = '';
+                    document.getElementById('clientPhone').value = '';
+                    document.getElementById('clientEmail').value = '';
+                    document.getElementById('clientAddress').value = '';
+                    loadClients();
+                    loadClientsForSelect();
+                    loadDashboard();
+                    setTimeout(() => { msgDiv.innerHTML = ''; }, 3000);
+                } else {
+                    msgDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '<div class="error">Server error</div>';
+            }
+        }
+
+        async function addLoan() {
+            const clientId = document.getElementById('loanClientId').value;
+            const amount = document.getElementById('loanAmount').value;
+            const interest = document.getElementById('loanInterest').value;
+            const duration = document.getElementById('loanDuration').value;
+            const msgDiv = document.getElementById('addLoanMsg');
+
+            if (!clientId || !amount || !interest) {
+                msgDiv.innerHTML = '<div class="error">Tafadhali chagua mteja na jaza kiasi na riba</div>';
+                return;
+            }
+
+            const selectedOption = document.getElementById('loanClientId').options[document.getElementById('loanClientId').selectedIndex];
+            const clientName = selectedOption.getAttribute('data-name');
+            const clientPhone = selectedOption.getAttribute('data-phone');
+
+            try {
+                const res = await fetch(`${API_URL}/api/loans`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        client_id: parseInt(clientId),
+                        client_name: clientName,
+                        phone_number: clientPhone,
+                        amount_borrowed: parseFloat(amount),
+                        interest_rate: parseFloat(interest),
+                        duration_months: parseInt(duration)
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.innerHTML = '<div class="success">✅ Mkopo umetolewa kikamilifu!</div>';
+                    document.getElementById('loanAmount').value = '';
+                    document.getElementById('loanInterest').value = '5';
+                    document.getElementById('loanDuration').value = '6';
+                    loadLoans();
+                    loadDashboard();
+                    setTimeout(() => { msgDiv.innerHTML = ''; }, 3000);
+                } else {
+                    msgDiv.innerHTML = `<div class="error">${data.message}</div>`;
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '<div class="error">Server error</div>';
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        if (localStorage.getItem('token')) {
+            token = localStorage.getItem('token');
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            loadDashboard();
+            loadClients();
+            loadLoans();
+            loadClientsForSelect();
+        }
+    </script>
+</body>
+</html>

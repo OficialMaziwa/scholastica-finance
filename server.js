@@ -371,6 +371,10 @@ app.use('*', (req, res) => {
     });
 });
 
+// Serve frontend files
+const path = require('path');
+app.use(express.static('public'));
+
 // ==================== START SERVER ====================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
