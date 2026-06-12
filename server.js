@@ -3,6 +3,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -43,8 +44,16 @@ function formatPhoneNumber(phone) {
     return num;
 }
 
-// ==================== ROOT ENDPOINT ====================
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Root endpoint - serve HTML dashboard
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// API Info endpoint
+app.get('/api', (req, res) => {
     res.json({
         success: true,
         message: 'Scholastica Finance API',
@@ -64,7 +73,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// ==================== HEALTH CHECK ====================
+// Health check
 app.get('/health', (req, res) => {
     res.json({
         status: 'OK',
@@ -359,26 +368,18 @@ app.get('/api/reports/dashboard', async (req, res) => {
     }
 });
 
-// ==================== 404 HANDLER (For unknown routes) ====================
+// 404 handler for undefined routes
 app.use('*', (req, res) => {
     res.status(404).json({
         success: false,
-        message: 'Endpoint not found',
-        available_endpoints: {
-            get: ['/', '/health', '/api/clients', '/api/clients/:id', '/api/loans/all', '/api/loans/active', '/api/payments/all', '/api/reports/dashboard'],
-            post: ['/api/auth/register', '/api/auth/login', '/api/clients', '/api/loans', '/api/payments']
-        }
+        message: 'Endpoint not found'
     });
 });
 
-// Serve frontend files
-const path = require('path');
-app.use(express.static('public'));
-
-// ==================== START SERVER ====================
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
-    console.log(`📍 Health check: http://localhost:${PORT}/health`);
-    console.log(`📍 Root endpoint: http://localhost:${PORT}/`);
+    console.log(`📍 Frontend: http://localhost:${PORT}/`);
+    console.log(`📍 Health: http://localhost:${PORT}/health`);
 });
