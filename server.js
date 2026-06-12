@@ -286,6 +286,7 @@ app.get('/api/payments/all', async (req, res) => {
     }
 });
 
+// FIXED PAYMENT ENDPOINT - Does NOT update remaining_balance directly
 app.post('/api/payments', async (req, res) => {
     const { loan_id, amount, payment_method, payment_date } = req.body;
     
@@ -297,7 +298,7 @@ app.post('/api/payments', async (req, res) => {
     
     try {
         // 1. Check if loan exists
-        const loanCheck = await pool.query('SELECT id, total_amount FROM loans WHERE id = $1', [loan_id]);
+        const loanCheck = await pool.query('SELECT id, total_amount, amount_repaid FROM loans WHERE id = $1', [loan_id]);
         if (loanCheck.rows.length === 0) {
             return res.status(404).json({ success: false, message: 'Loan not found' });
         }
@@ -310,28 +311,36 @@ app.post('/api/payments', async (req, res) => {
             [loan_id, amount, payment_date || null, payment_method]
         );
         
-        // 3. Calculate new totals
+        // 3. Calculate total paid from payments table
         const totals = await pool.query(
             `SELECT COALESCE(SUM(amount), 0) as total_paid FROM payments WHERE loan_id = $1`,
             [loan_id]
         );
         
         const totalPaid = parseFloat(totals.rows[0].total_paid);
-        const totalAmount = parseFloat(loanCheck.rows[0].total_amount);
-        const newBalance = totalAmount - totalPaid;
-        const newStatus = newBalance <= 0 ? 'completed' : 'active';
         
-        // 4. Update loan
+        // 4. Update ONLY amount_repaid (remaining_balance is auto-calculated by database)
         await pool.query(
-            `UPDATE loans 
-             SET amount_repaid = $1, 
-                 remaining_balance = $2, 
-                 status = $3 
-             WHERE id = $4`,
-            [totalPaid, newBalance, newStatus, loan_id]
+            `UPDATE loans SET amount_repaid = $1 WHERE id = $2`,
+            [totalPaid, loan_id]
         );
         
-        console.log('✅ Payment recorded:', { loan_id, amount, newBalance });
+        // 5. Get updated loan info (remaining_balance is auto-calculated)
+        const updatedLoan = await pool.query(
+            `SELECT id, amount_borrowed, amount_repaid, remaining_balance, status FROM loans WHERE id = $1`,
+            [loan_id]
+        );
+        
+        const loan = updatedLoan.rows[0];
+        const newBalance = parseFloat(loan.remaining_balance);
+        const newStatus = newBalance <= 0 ? 'completed' : 'active';
+        
+        // 6. Update status if completed
+        if (newStatus !== loan.status && newStatus === 'completed') {
+            await pool.query(`UPDATE loans SET status = $1 WHERE id = $2`, [newStatus, loan_id]);
+        }
+        
+        console.log('✅ Payment recorded:', { loan_id, amount, totalPaid, newBalance });
         
         res.json({
             success: true,
@@ -339,7 +348,8 @@ app.post('/api/payments', async (req, res) => {
             data: {
                 payment: insertResult.rows[0],
                 remaining_balance: newBalance,
-                status: newStatus
+                status: newStatus,
+                amount_repaid: totalPaid
             }
         });
         
