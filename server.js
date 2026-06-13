@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const path = require('path');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -24,15 +23,6 @@ pool.connect((err, client, release) => {
     } else {
         console.log('✅ Connected to PostgreSQL database');
         release();
-    }
-});
-
-// Email configuration
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER || 'scholamalaba63@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
     }
 });
 
@@ -56,45 +46,22 @@ function generateRandomPassword() {
     return password;
 }
 
-// Send SMS Alert
+// Send SMS Only (No Email)
 async function sendSMS(phoneNumber, message) {
     const adminPhone = '0686527605';
     console.log(`📱 SMS to: ${phoneNumber}`);
     console.log(`📱 SMS to admin: ${adminPhone}`);
     console.log(`📝 Message: ${message}`);
+    console.log(`✅ SMS sent successfully (simulated)`);
     return true;
 }
 
-// Send Email
-async function sendEmail(to, subject, html) {
-    try {
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER || 'scholamalaba63@gmail.com',
-            to: to,
-            subject: subject,
-            html: html
-        });
-        console.log(`✅ Email sent to: ${to}`);
-        return true;
-    } catch (error) {
-        console.error('Email error:', error.message);
-        return false;
-    }
-}
-
-// Send SMS Alert for loans
-async function sendAlerts(phoneNumber, email, subject, message) {
+// Send alert for loans (SMS only)
+async function sendAlert(phoneNumber, message) {
     const adminPhone = '0686527605';
-    const adminEmail = 'scholamalaba63@gmail.com';
-    
-    console.log(`📱 SMS to: ${phoneNumber}`);
-    console.log(`📱 SMS to admin: ${adminPhone}`);
-    console.log(`📧 Email to: ${email}`);
-    console.log(`📧 Email to admin: ${adminEmail}`);
-    
-    await sendSMS(phoneNumber, message);
-    await sendEmail(email, subject, message);
-    
+    console.log(`📱 ALERT SMS to: ${phoneNumber}`);
+    console.log(`📱 ALERT SMS to admin: ${adminPhone}`);
+    console.log(`📝 Message: ${message}`);
     return true;
 }
 
@@ -102,7 +69,7 @@ async function sendAlerts(phoneNumber, email, subject, message) {
 async function checkAndSendAlerts() {
     try {
         const result = await pool.query(`
-            SELECT l.*, c.full_name as client_name, c.phone_number, c.email
+            SELECT l.*, c.full_name as client_name, c.phone_number
             FROM loans l
             JOIN clients c ON l.client_id = c.id
             WHERE l.status = 'active' 
@@ -112,9 +79,8 @@ async function checkAndSendAlerts() {
         for (const loan of result.rows) {
             const daysRemaining = Math.ceil((new Date(loan.due_date) - new Date()) / (1000 * 60 * 60 * 24));
             const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(loan.amount_borrowed).toLocaleString()} unatarajiwa kulipa tarehe ${new Date(loan.due_date).toLocaleDateString()}. Siku ${daysRemaining} zimesalia. Tafadhali lipa kabla ya muda. Asante! - Scholastica Finance`;
-            const subject = `KUMBUKUMBU LA MKOPO - Siku ${daysRemaining} Zimesalia`;
             
-            await sendAlerts(loan.phone_number, loan.email || 'scholamalaba63@gmail.com', subject, message);
+            await sendAlert(loan.phone_number, message);
         }
     } catch (error) {
         console.error('Error sending alerts:', error);
@@ -128,7 +94,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 
 app.get('/api', (req, res) => {
-    res.json({ success: true, message: 'Scholastica Finance API v4.0' });
+    res.json({ success: true, message: 'Scholastica Finance API v5.0' });
 });
 
 app.get('/health', (req, res) => { res.json({ status: 'OK', timestamp: new Date().toISOString() }); });
@@ -164,19 +130,20 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// Forgot Password - Send new password to email
+// Forgot Password - Send new password via SMS only
 app.post('/api/auth/forgot-password', async (req, res) => {
-    const { email } = req.body;
+    const { phone } = req.body;
     
-    if (!email) {
-        return res.status(400).json({ success: false, message: 'Barua pepe inahitajika' });
+    if (!phone) {
+        return res.status(400).json({ success: false, message: 'Namba ya simu inahitajika' });
     }
     
     try {
-        const result = await pool.query(`SELECT id, username, full_name FROM users WHERE email = $1`, [email]);
+        const formattedPhone = formatPhoneNumber(phone);
+        const result = await pool.query(`SELECT id, username, full_name, phone FROM users WHERE phone = $1 OR username = $1`, [formattedPhone, phone]);
         
         if (result.rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'Barua pepe hii haijasajiliwa kwenye mfumo' });
+            return res.status(404).json({ success: false, message: 'Namba hii haijasajiliwa kwenye mfumo' });
         }
         
         const user = result.rows[0];
@@ -186,32 +153,12 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         
         await pool.query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [password_hash, user.id]);
         
-        const html = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
-                <div style="background: linear-gradient(135deg, #0f2b4d, #1a4a7a); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h2>🏦 SCHOLASTICA FINANCE</h2>
-                    <p>Mfumo wa Usimamizi wa Mikopo</p>
-                </div>
-                <div style="background: white; padding: 25px; border-radius: 0 0 10px 10px;">
-                    <h3>Habari ${user.full_name},</h3>
-                    <p>Umeomba kubadilisha neno lako la siri. Hili ni neno lako jipya la siri:</p>
-                    <div style="background: #f0f2f5; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 2px; border-radius: 8px; margin: 20px 0;">
-                        ${newPassword}
-                    </div>
-                    <p>Tafadhali ingia kwenye mfumo kwa kutumia neno hili jipya, kisha ubadilishe kwenye dashboard kwa neno la siri utakalokumbuka.</p>
-                    <p style="margin-top: 20px; color: #666; font-size: 12px;">Ukiwa hujaomba kubadilisha neno la siri, tafadhali wasiliana na msimamizi.</p>
-                    <hr style="margin: 20px 0;">
-                    <p style="color: #888; font-size: 12px;">© 2024 Scholastica Finance. All rights reserved.</p>
-                </div>
-            </div>
-        `;
+        const message = `SCHOLASTICA FINANCE: Neno lako jipya la siri ni: ${newPassword}. Tafadhali ingia na kubadilisha neno la siri kwenye dashboard.`;
         
-        await sendEmail(email, 'SCHOLASTICA FINANCE - Neno lako jipya la siri', html);
-        
-        // Also send SMS to admin phone
+        await sendSMS(formattedPhone, message);
         await sendSMS('0686527605', `Password imebadilishwa kwa user ${user.username}. New password: ${newPassword}`);
         
-        res.json({ success: true, message: 'Neno lako jipya la siri limetumwa kwa barua pepe yako. Angalia email yako.' });
+        res.json({ success: true, message: 'Neno jipya la siri limetumwa kwa namba yako ya simu' });
     } catch (error) {
         console.error('Forgot password error:', error);
         res.status(500).json({ success: false, message: 'Server error. Tafadhali jaribu tena.' });
@@ -264,6 +211,27 @@ app.post('/api/auth/change-password', async (req, res) => {
 });
 
 // ==================== CLIENTS ====================
+// Check if client exists
+app.post('/api/clients/check', async (req, res) => {
+    const { phone_number } = req.body;
+    if (!phone_number) {
+        return res.status(400).json({ success: false, message: 'Namba ya simu inahitajika' });
+    }
+    
+    try {
+        const formattedPhone = formatPhoneNumber(phone_number);
+        const result = await pool.query(`SELECT * FROM clients WHERE phone_number = $1`, [formattedPhone]);
+        
+        if (result.rows.length > 0) {
+            res.json({ success: true, exists: true, client: result.rows[0] });
+        } else {
+            res.json({ success: true, exists: false });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 app.get('/api/clients', async (req, res) => {
     try {
         const result = await pool.query(`SELECT * FROM clients ORDER BY created_at DESC`);
@@ -284,6 +252,18 @@ app.post('/api/clients', async (req, res) => {
     if (!full_name || !phone_number) return res.status(400).json({ success: false, message: 'Jina na namba ya simu vinahitajika' });
     try {
         const formattedPhone = formatPhoneNumber(phone_number);
+        
+        // Check if client already exists
+        const existingClient = await pool.query(`SELECT * FROM clients WHERE phone_number = $1`, [formattedPhone]);
+        if (existingClient.rows.length > 0) {
+            return res.status(409).json({ 
+                success: false, 
+                exists: true, 
+                client: existingClient.rows[0],
+                message: 'Mteja tayari yupo kwenye mfumo. Je, unataka kumuongezea deni?'
+            });
+        }
+        
         const result = await pool.query(`INSERT INTO clients (full_name, phone_number, email, address) VALUES ($1, $2, $3, $4) RETURNING *`, [full_name, formattedPhone, email || null, address || null]);
         res.status(201).json({ success: true, data: result.rows[0] });
     } catch (error) {
@@ -333,7 +313,7 @@ app.get('/api/loans/all', async (req, res) => {
     
     try {
         const result = await pool.query(`
-            SELECT l.*, c.full_name as client_full_name, c.phone_number, c.email,
+            SELECT l.*, c.full_name as client_full_name, c.phone_number,
                    (l.due_date - CURRENT_DATE) as days_remaining, 
                    CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue 
             FROM loans l 
@@ -347,7 +327,7 @@ app.get('/api/loans/all', async (req, res) => {
 app.get('/api/loans/defaulters', async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT l.*, c.full_name as client_full_name, c.phone_number as client_phone, c.email,
+            SELECT l.*, c.full_name as client_full_name, c.phone_number,
                    (CURRENT_DATE - l.due_date) as days_overdue 
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
@@ -361,7 +341,7 @@ app.get('/api/loans/defaulters', async (req, res) => {
 app.get('/api/loans/upcoming', async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT l.*, c.full_name as client_full_name, c.phone_number as client_phone, c.email,
+            SELECT l.*, c.full_name as client_full_name, c.phone_number,
                    (l.due_date - CURRENT_DATE) as days_remaining 
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
@@ -389,7 +369,18 @@ app.post('/api/loans', async (req, res) => {
 // ==================== PAYMENTS ====================
 app.get('/api/payments/all', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT p.*, l.client_name, l.phone_number, l.amount_borrowed FROM payments p JOIN loans l ON p.loan_id = l.id ORDER BY p.payment_date DESC`);
+        const result = await pool.query(`
+            SELECT p.*, l.client_name, l.phone_number, l.amount_borrowed,
+                   CASE 
+                       WHEN p.payment_method = 'cash' THEN '💵 Pesa Taslimu'
+                       WHEN p.payment_method = 'bank' THEN '🏦 Benki'
+                       WHEN p.payment_method = 'mobile' THEN '📱 M-Pesa / Tigo Pesa'
+                       ELSE p.payment_method
+                   END as payment_method_display
+            FROM payments p 
+            JOIN loans l ON p.loan_id = l.id 
+            ORDER BY p.payment_date DESC
+        `);
         res.json({ success: true, data: result.rows });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
@@ -398,16 +389,34 @@ app.post('/api/payments', async (req, res) => {
     const { loan_id, amount, payment_method, payment_date } = req.body;
     if (!loan_id || !amount) return res.status(400).json({ success: false, message: 'Taarifa za malipo hazijakamilika' });
     try {
-        const loanCheck = await pool.query(`SELECT id, total_amount, amount_repaid FROM loans WHERE id = $1`, [loan_id]);
+        const loanCheck = await pool.query(`SELECT id, total_amount, amount_repaid, client_id FROM loans WHERE id = $1`, [loan_id]);
         if (loanCheck.rows.length === 0) return res.status(404).json({ success: false, message: 'Mkopo haupatikani' });
-        const insertResult = await pool.query(`INSERT INTO payments (loan_id, amount, payment_date, payment_method) VALUES ($1, $2, COALESCE($3, CURRENT_DATE), COALESCE($4, 'cash')) RETURNING *`, [loan_id, amount, payment_date || null, payment_method]);
+        
+        const insertResult = await pool.query(
+            `INSERT INTO payments (loan_id, amount, payment_date, payment_method) 
+             VALUES ($1, $2, COALESCE($3, CURRENT_DATE), COALESCE($4, 'cash'))
+             RETURNING *`,
+            [loan_id, amount, payment_date || null, payment_method]
+        );
+        
         const totals = await pool.query(`SELECT COALESCE(SUM(amount), 0) as total_paid FROM payments WHERE loan_id = $1`, [loan_id]);
         const totalPaid = parseFloat(totals.rows[0].total_paid);
         await pool.query(`UPDATE loans SET amount_repaid = $1 WHERE id = $2`, [totalPaid, loan_id]);
+        
         const updatedLoan = await pool.query(`SELECT id, remaining_balance, status FROM loans WHERE id = $1`, [loan_id]);
         const newBalance = parseFloat(updatedLoan.rows[0].remaining_balance);
         const newStatus = newBalance <= 0 ? 'completed' : 'active';
-        if (newStatus !== updatedLoan.rows[0].status && newStatus === 'completed') await pool.query(`UPDATE loans SET status = $1 WHERE id = $2`, [newStatus, loan_id]);
+        if (newStatus !== updatedLoan.rows[0].status && newStatus === 'completed') {
+            await pool.query(`UPDATE loans SET status = $1 WHERE id = $2`, [newStatus, loan_id]);
+        }
+        
+        // Send SMS confirmation to client
+        const clientResult = await pool.query(`SELECT full_name, phone_number FROM clients WHERE id = $1`, [loanCheck.rows[0].client_id]);
+        if (clientResult.rows.length > 0 && clientResult.rows[0].phone_number) {
+            const message = `SCHOLASTICA FINANCE: Malipo yako ya TZS ${Number(amount).toLocaleString()} yamepokelewa. Salio lililosalia: TZS ${newBalance.toLocaleString()}. Asante!`;
+            await sendSMS(clientResult.rows[0].phone_number, message);
+        }
+        
         res.json({ success: true, message: 'Malipo yamekamilika', data: { payment: insertResult.rows[0], remaining_balance: newBalance, status: newStatus, amount_repaid: totalPaid } });
     } catch (error) { console.error('Payment error:', error); res.status(500).json({ success: false, message: error.message }); }
 });
@@ -443,6 +452,6 @@ app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'En
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { 
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
-    console.log(`📱 Admin phone: 0686527605`);
-    console.log(`📧 Admin email: scholamalaba63@gmail.com`);
+    console.log(`📱 Admin phone for alerts: 0686527605`);
+    console.log(`📱 SMS only - No email alerts`);
 });

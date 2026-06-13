@@ -6,140 +6,40 @@
     <title>Scholastica Finance - Mfumo wa Mikopo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
-            background: #f0f2f5;
-            font-size: 16px;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        .header { 
-            background: linear-gradient(135deg, #0f2b4d, #1a4a7a); 
-            color: white; 
-            padding: 15px 0; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-content { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 16px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .logo h1 { font-size: clamp(18px, 5vw, 24px); letter-spacing: 0.5px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; font-size: 16px; line-height: 1.5; }
+        .header { background: linear-gradient(135deg, #0f2b4d, #1a4a7a); color: white; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .logo h1 { font-size: clamp(18px, 5vw, 24px); }
         .logo p { font-size: clamp(10px, 3vw, 12px); opacity: 0.8; margin-top: 4px; }
-        .logout-btn, .change-pwd-btn { 
-            background: rgba(255,255,255,0.2); 
-            border: none; 
-            color: white; 
-            padding: 8px 16px; 
-            border-radius: 30px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 13px;
-            transition: all 0.3s; 
-            margin-left: 8px;
-        }
+        .logout-btn, .change-pwd-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 13px; margin-left: 8px; }
         .logout-btn:hover, .change-pwd-btn:hover { background: rgba(255,255,255,0.3); }
-        
         .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; }
         
         /* Login Page */
         .login-wrapper { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 30px; 
-            width: 100%;
-            max-width: 400px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .login-card h2 { text-align: center; margin-bottom: 8px; color: #0f2b4d; font-size: clamp(22px, 6vw, 28px); }
+        .login-card { background: white; border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .login-card h2 { text-align: center; margin-bottom: 8px; color: #0f2b4d; }
         .login-card .subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
         .input-group { margin-bottom: 18px; }
         .input-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 14px; }
-        .input-group input { 
-            width: 100%; 
-            padding: 12px 14px; 
-            border: 1px solid #ddd; 
-            border-radius: 10px; 
-            font-size: 16px; 
-            transition: all 0.3s; 
-        }
-        .input-group input:focus { outline: none; border-color: #1a4a7a; box-shadow: 0 0 0 2px rgba(26,74,122,0.1); }
-        .btn { 
-            background: linear-gradient(135deg, #1a4a7a, #0f2b4d); 
-            color: white; 
-            padding: 12px; 
-            border: none; 
-            border-radius: 10px; 
-            font-size: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: all 0.3s; 
-        }
+        .input-group input { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+        .input-group input:focus { outline: none; border-color: #1a4a7a; }
+        .btn { background: linear-gradient(135deg, #1a4a7a, #0f2b4d); color: white; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; }
         .btn:hover { opacity: 0.9; }
-        .link-btn { 
-            background: none; 
-            color: #1a4a7a; 
-            text-decoration: underline; 
-            margin-top: 15px; 
-            font-size: 13px;
-        }
+        .link-btn { background: none; color: #1a4a7a; text-decoration: underline; margin-top: 15px; }
         .link-btn:hover { background: none; opacity: 0.8; }
         
         /* Stats Cards */
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 12px; 
-            margin-bottom: 25px; 
-        }
-        .stat-card { 
-            background: white; 
-            border-radius: 14px; 
-            padding: 14px 10px; 
-            text-align: center; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .stat-card { background: white; border-radius: 14px; padding: 14px 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .stat-card h3 { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; }
         .stat-number { font-size: 16px; font-weight: 800; color: #1a4a7a; }
         .stat-number.warning { color: #e74c3c; }
         .stat-number.success { color: #27ae60; }
         
         /* Tabs */
-        .tabs-wrapper { 
-            background: white; 
-            border-radius: 14px; 
-            padding: 8px; 
-            margin-bottom: 20px; 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 6px; 
-        }
-        .tab { 
-            padding: 10px 16px; 
-            background: transparent; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 13px;
-            color: #666; 
-            transition: all 0.3s; 
-            flex: 1;
-            min-width: 80px;
-            text-align: center;
-        }
+        .tabs-wrapper { background: white; border-radius: 14px; padding: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .tab { padding: 10px 16px; background: transparent; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; color: #666; flex: 1; min-width: 80px; text-align: center; }
         .tab:hover { background: #f0f0f0; color: #1a4a7a; }
         .tab.active { background: linear-gradient(135deg, #1a4a7a, #0f2b4d); color: white; }
         
@@ -147,29 +47,14 @@
         .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .sort-bar { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 20px; 
-            padding-bottom: 12px; 
-            border-bottom: 1px solid #eee;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+        .sort-bar { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eee; flex-wrap: wrap; align-items: center; }
         .sort-bar label { font-weight: 600; color: #555; font-size: 13px; }
-        .sort-select { 
-            padding: 8px 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            background: white;
-            font-size: 13px;
-            cursor: pointer;
-        }
+        .sort-select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; background: white; font-size: 13px; cursor: pointer; }
         
-        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-wrapper { overflow-x: auto; }
         .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
         .data-table th, .data-table td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
-        .data-table th { background: #f8f9fa; font-weight: 700; color: #333; font-size: 12px; }
+        .data-table th { background: #f8f9fa; font-weight: 700; }
         .data-table tr:hover { background: #fafafa; }
         
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
@@ -180,28 +65,21 @@
         
         .btn-sm { padding: 5px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; margin: 2px; }
         .btn-edit { background: #ff9800; color: white; }
-        .btn-edit:hover { background: #f57c00; }
         .btn-delete { background: #f44336; color: white; }
-        .btn-delete:hover { background: #d32f2f; }
         .btn-alert { background: #2196f3; color: white; }
         .btn-alert:hover { background: #1976d2; }
         
         .form-card { background: #fafafa; border-radius: 14px; padding: 20px; }
         .form-row { margin-bottom: 18px; }
         .form-row label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 13px; }
-        .form-row input, .form-row select { 
-            width: 100%; 
-            padding: 12px 14px; 
-            border: 1px solid #ddd; 
-            border-radius: 10px; 
-            font-size: 14px; 
-        }
+        .form-row input, .form-row select { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; }
         .form-row input:focus, .form-row select:focus { outline: none; border-color: #1a4a7a; }
         
         .alert-message { padding: 12px 15px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; }
         .alert-error { background: #ffebee; color: #c62828; border-left: 4px solid #c62828; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #2e7d32; }
         .alert-info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
+        .alert-warning { background: #fff3e0; color: #ef6c00; border-left: 4px solid #ef6c00; }
         
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
         .modal-content { background: white; margin: 10% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 450px; animation: slideIn 0.2s ease; }
@@ -226,9 +104,7 @@
             .tab { padding: 8px 12px; font-size: 11px; min-width: 60px; }
             .data-table th, .data-table td { padding: 8px 5px; font-size: 11px; }
             .payment-item { flex-direction: column; text-align: center; }
-            .payment-details { text-align: center; }
             .header-content { flex-direction: column; text-align: center; }
-            .change-pwd-btn, .logout-btn { margin: 5px 0; }
         }
     </style>
 </head>
@@ -254,8 +130,8 @@
                 <div class="subtitle">Tafadhali ingia kwenye mfumo wako</div>
                 <div id="loginError" class="alert-message alert-error" style="display:none"></div>
                 <div class="input-group">
-                    <label>📧 Barua pepe</label>
-                    <input type="email" id="loginIdentifier">
+                    <label>📧 Barua pepe au Jina la mtumiaji</label>
+                    <input type="text" id="loginIdentifier">
                 </div>
                 <div class="input-group">
                     <label>🔒 Neno la siri</label>
@@ -322,7 +198,6 @@
                 <div class="form-card">
                     <div class="form-row"><label>Jina kamili *</label><input type="text" id="clientName"></div>
                     <div class="form-row"><label>Namba ya simu *</label><input type="text" id="clientPhone"></div>
-                    <div class="form-row"><label>Barua pepe</label><input type="email" id="clientEmail"></div>
                     <div class="form-row"><label>Anuani</label><input type="text" id="clientAddress"></div>
                     <button class="btn" onclick="addClient()">💾 HIFADHI MTEJA</button>
                 </div>
@@ -346,24 +221,28 @@
                 <div class="form-card">
                     <div class="form-row"><label>Chagua mkopo *</label><select id="paymentLoanId"></select></div>
                     <div class="form-row"><label>Kiasi cha kulipa (TZS) *</label><input type="number" id="paymentAmount"></div>
-                    <div class="form-row"><label>Njia ya malipo</label><select id="paymentMethod"><option value="cash">💵 Pesa taslimu</option><option value="bank">🏦 Benki</option><option value="mobile">📱 M-Pesa / Tigo Pesa</option></select></div>
+                    <div class="form-row"><label>Njia ya malipo</label><select id="paymentMethod">
+                        <option value="cash">💵 Pesa Taslimu</option>
+                        <option value="bank">🏦 Benki</option>
+                        <option value="mobile">📱 M-Pesa / Tigo Pesa</option>
+                    </select></div>
                     <button class="btn" onclick="makePayment()">💵 REKODI MALIPO</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
+    <!-- Forgot Password Modal (SMS Only) -->
     <div id="forgotPasswordModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>🔑 Umesahau Neno la Siri</h3><span class="close" onclick="closeForgotPasswordModal()">&times;</span></div>
             <div id="forgotPwdMsg"></div>
-            <div class="form-row"><label>Barua pepe yako</label><input type="email" id="forgotEmail" placeholder="Weka barua pepe yako"></div>
-            <button class="btn" onclick="forgotPassword()">📧 Tuma Neno la Siri Jipya</button>
+            <div class="form-row"><label>Namba ya simu yako</label><input type="text" id="forgotPhone" placeholder="Weka namba ya simu"></div>
+            <button class="btn" onclick="forgotPassword()">📱 Tuma Neno la Siri Jipya</button>
         </div>
     </div>
 
-    <!-- Change Password Modal (while logged in) -->
+    <!-- Change Password Modal -->
     <div id="changePasswordModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>🔑 Badilisha Neno la Siri</h3><span class="close" onclick="closeChangePasswordModal()">&times;</span></div>
@@ -375,6 +254,19 @@
         </div>
     </div>
 
+    <!-- Duplicate Client Modal -->
+    <div id="duplicateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>⚠️ Mteja Tayari Yupo</h3><span class="close" onclick="closeDuplicateModal()">&times;</span></div>
+            <div id="duplicateMsg"></div>
+            <div class="form-row"><label>Jina</label><input type="text" id="dupFullName" readonly></div>
+            <div class="form-row"><label>Namba ya simu</label><input type="text" id="dupPhone" readonly></div>
+            <div class="form-row"><label>Anuani</label><input type="text" id="dupAddress" readonly></div>
+            <button class="btn" onclick="addLoanForExistingClient()">💰 Mwongeze Deni (Toa Mkopo)</button>
+            <button class="btn" onclick="closeDuplicateModal()" style="margin-top:10px; background:#666">❌ Funga</button>
+        </div>
+    </div>
+
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
@@ -383,7 +275,6 @@
             <input type="hidden" id="editClientId">
             <div class="form-row"><label>Jina kamili</label><input type="text" id="editFullName"></div>
             <div class="form-row"><label>Namba ya simu</label><input type="text" id="editPhone"></div>
-            <div class="form-row"><label>Barua pepe</label><input type="email" id="editEmail"></div>
             <div class="form-row"><label>Anuani</label><input type="text" id="editAddress"></div>
             <div class="form-row"><label>Hali</label><select id="editStatus"><option value="active">Anatumika</option><option value="inactive">Hatumiki</option></select></div>
             <button class="btn" onclick="saveClientEdit()">💾 HIFADHI</button>
@@ -393,10 +284,9 @@
     <script>
         const API_URL = window.location.origin;
         let token = localStorage.getItem('token');
+        let pendingDuplicateClient = null;
 
-        if (token) { 
-            showDashboard(); 
-        }
+        if (token) { showDashboard(); }
 
         async function login() {
             const identifier = document.getElementById('loginIdentifier').value;
@@ -440,7 +330,7 @@
 
         function openForgotPasswordModal() {
             document.getElementById('forgotPasswordModal').style.display = 'block';
-            document.getElementById('forgotEmail').value = '';
+            document.getElementById('forgotPhone').value = '';
             document.getElementById('forgotPwdMsg').innerHTML = '';
         }
 
@@ -460,11 +350,16 @@
             document.getElementById('changePasswordModal').style.display = 'none';
         }
 
+        function closeDuplicateModal() {
+            document.getElementById('duplicateModal').style.display = 'none';
+            pendingDuplicateClient = null;
+        }
+
         async function forgotPassword() {
-            const email = document.getElementById('forgotEmail').value;
+            const phone = document.getElementById('forgotPhone').value;
             const msgDiv = document.getElementById('forgotPwdMsg');
-            if (!email) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka barua pepe yako</div>';
+            if (!phone) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka namba yako ya simu</div>';
                 return;
             }
             msgDiv.innerHTML = '<div class="alert-message alert-info">Inatuma ombi lako...</div>';
@@ -472,14 +367,12 @@
                 const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ phone })
                 });
                 const data = await res.json();
                 if (data.success) {
                     msgDiv.innerHTML = `<div class="alert-message alert-success">✅ ${data.message}</div>`;
-                    setTimeout(() => {
-                        closeForgotPasswordModal();
-                    }, 3000);
+                    setTimeout(() => closeForgotPasswordModal(), 3000);
                 } else {
                     msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
                 }
@@ -516,9 +409,7 @@
                 const data = await res.json();
                 if (data.success) {
                     msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Neno la siri limebadilishwa kikamilifu!</div>';
-                    setTimeout(() => {
-                        closeChangePasswordModal();
-                    }, 2000);
+                    setTimeout(() => closeChangePasswordModal(), 2000);
                 } else {
                     msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
                 }
@@ -575,19 +466,18 @@
                 const res = await fetch(`${API_URL}/api/clients`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>JINA</th><th>SIMU</th><th>BARUA PEPE</th><th>ANUALI</th><th>HALI</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>JINA</th><th>SIMU</th><th>ANUALI</th><th>HALI</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((c, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${c.full_name}</strong></td>
                             <td>${c.phone_number}</td>
-                            <td>${c.email || '-'}</td>
                             <td>${c.address || '-'}</td>
                             <td><span class="badge ${c.status === 'active' ? 'badge-active' : 'badge-overdue'}">${c.status === 'active' ? 'Anatumika' : 'Hatumiki'}</span></td>
                             <td><button class="btn-sm btn-edit" onclick="openEditModal(${c.id})">✏️</button> <button class="btn-sm btn-delete" onclick="deleteClient(${c.id})">🗑️</button></td>
                         </tr>`;
                     });
-                    html += `</tbody>}</table>`;
+                    html += `</tbody></table>`;
                     document.getElementById('clientsList').innerHTML = html;
                 } else {
                     document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja waliosajiliwa</div>';
@@ -615,7 +505,7 @@
                             <td><span class="badge ${l.status === 'active' ? (l.days_remaining < 0 ? 'badge-overdue' : 'badge-active') : 'badge-completed'}">${l.status === 'active' ? (l.days_remaining < 0 ? 'Imechelewa' : 'Inayoendelea') : 'Imelipwa'}</span></td>
                         </tr>`;
                     });
-                    html += `</tbody>}</tr>`;
+                    html += `</tbody></table>`;
                     document.getElementById('loansList').innerHTML = html;
                 } else {
                     document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo</div>';
@@ -633,14 +523,14 @@
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${l.client_full_name}</strong></td>
-                            <td>${l.client_phone}</td>
+                            <td>${l.phone_number}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge badge-overdue">${l.days_overdue} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert('${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert('${l.phone_number}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
                         </tr>`;
                     });
-                    html += `</tbody>}</tr>`;
+                    html += `</tbody></table>`;
                     document.getElementById('defaultersList').innerHTML = html;
                 } else {
                     document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu!</div>';
@@ -658,14 +548,14 @@
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${l.client_full_name}</strong></td>
-                            <td>${l.client_phone}</td>
+                            <td>${l.phone_number}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge badge-warning">${l.days_remaining} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert('${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert('${l.phone_number}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
                         </tr>`;
                     });
-                    html += `</tbody>}</table>`;
+                    html += `</tbody></table>`;
                     document.getElementById('upcomingList').innerHTML = html;
                 } else {
                     document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo inayokaribia</div>';
@@ -680,10 +570,12 @@
                 if (data.success && data.data.length > 0) {
                     let html = `<div class="payment-history">`;
                     data.data.forEach(p => {
+                        let methodDisplay = p.payment_method_display || p.payment_method;
                         html += `<div class="payment-item">
-                            <div><strong>${p.client_name}</strong> - TZS ${Number(p.amount_borrowed).toLocaleString()}</div>
-                            <div>💵 TZS ${Number(p.amount).toLocaleString()}</div>
+                            <div><strong>${p.client_name}</strong></div>
+                            <div>💰 TZS ${Number(p.amount).toLocaleString()}</div>
                             <div>📅 ${new Date(p.payment_date).toLocaleDateString()}</div>
+                            <div><span class="payment-method">${methodDisplay}</span></div>
                         </div>`;
                     });
                     html += `</div>`;
@@ -701,7 +593,7 @@
                 if (data.success) {
                     let options = '<option value="">-- Chagua mteja --</option>';
                     data.data.forEach(c => {
-                        if(c.status === 'active') options += `<option value="${c.id}" data-name="${c.full_name}" data-phone="${c.phone_number}" data-email="${c.email || ''}">${c.full_name} - ${c.phone_number}</option>`;
+                        if(c.status === 'active') options += `<option value="${c.id}" data-name="${c.full_name}" data-phone="${c.phone_number}">${c.full_name} - ${c.phone_number}</option>`;
                     });
                     document.getElementById('loanClientId').innerHTML = options;
                 }
@@ -725,27 +617,47 @@
         async function addClient() {
             const name = document.getElementById('clientName').value;
             const phone = document.getElementById('clientPhone').value;
-            const email = document.getElementById('clientEmail').value;
             const address = document.getElementById('clientAddress').value;
             const msgDiv = document.getElementById('addClientMsg');
             if (!name || !phone) { msgDiv.innerHTML = '<div class="alert-message alert-error">Jina na namba ya simu vinahitajika</div>'; return; }
+            
             try {
                 const res = await fetch(`${API_URL}/api/clients`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ full_name: name, phone_number: phone, email, address })
+                    body: JSON.stringify({ full_name: name, phone_number: phone, email: '', address })
                 });
                 const data = await res.json();
                 if (data.success) {
                     msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mteja ameongezwa!</div>';
                     document.getElementById('clientName').value = '';
                     document.getElementById('clientPhone').value = '';
-                    document.getElementById('clientEmail').value = '';
                     document.getElementById('clientAddress').value = '';
                     loadClients(); loadClientsForSelect(); loadDashboard();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
-                } else { msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`; }
+                } else if (data.exists) {
+                    pendingDuplicateClient = data.client;
+                    document.getElementById('dupFullName').value = data.client.full_name;
+                    document.getElementById('dupPhone').value = data.client.phone_number;
+                    document.getElementById('dupAddress').value = data.client.address || '-';
+                    document.getElementById('duplicateModal').style.display = 'block';
+                    msgDiv.innerHTML = '';
+                } else {
+                    msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
+                }
             } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
+        }
+
+        function addLoanForExistingClient() {
+            if (pendingDuplicateClient) {
+                document.getElementById('loanClientId').value = pendingDuplicateClient.id;
+                showTab('addLoan');
+                closeDuplicateModal();
+                document.getElementById('addLoanMsg').innerHTML = '<div class="alert-message alert-success">✅ Tafadhali jaza taarifa za mkopo kwa mteja huyu</div>';
+                setTimeout(() => {
+                    document.getElementById('addLoanMsg').innerHTML = '';
+                }, 3000);
+            }
         }
 
         async function addLoan() {
@@ -758,12 +670,11 @@
             const selectedOption = document.getElementById('loanClientId').options[document.getElementById('loanClientId').selectedIndex];
             const clientName = selectedOption.getAttribute('data-name');
             const clientPhone = selectedOption.getAttribute('data-phone');
-            const clientEmail = selectedOption.getAttribute('data-email');
             try {
                 const res = await fetch(`${API_URL}/api/loans`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ client_id: parseInt(clientId), client_name: clientName, phone_number: clientPhone, email: clientEmail, amount_borrowed: parseFloat(amount), interest_rate: parseFloat(interest), duration_months: parseInt(duration) })
+                    body: JSON.stringify({ client_id: parseInt(clientId), client_name: clientName, phone_number: clientPhone, amount_borrowed: parseFloat(amount), interest_rate: parseFloat(interest), duration_months: parseInt(duration) })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -797,17 +708,15 @@
             } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
         }
 
-        function sendManualAlert(phone, email, name, balance, days) {
-            const message = `TAHADHARI: Mteja ${name} amechelewa kulipa mkopo kwa siku ${days}. Salio: TZS ${Number(balance).toLocaleString()}. - Scholastica Finance`;
-            if(confirm(`Tuma alert kwa ${phone} na ${email}?`)) {
-                alert(`✅ Alert imetumwa kwa ${phone} na ${email}\nNakala kwa 0686527605 na scholamalaba63@gmail.com`);
+        function sendManualAlert(phone, name, balance, days) {
+            if(confirm(`Tuma alert kwa ${phone}?`)) {
+                alert(`✅ Alert imetumwa kwa ${phone}\nNakala kwa 0686527605`);
             }
         }
 
-        function sendUpcomingAlert(phone, email, name, amount, days) {
-            const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(amount).toLocaleString()} unatarajiwa kulipa baada ya siku ${days}. Lipa kabla ya muda. - Scholastica Finance`;
-            if(confirm(`Tuma kumbukumbu kwa ${phone} na ${email}?`)) {
-                alert(`✅ Kumbukumbu imetumwa kwa ${phone} na ${email}\nNakala kwa 0686527605 na scholamalaba63@gmail.com`);
+        function sendUpcomingAlert(phone, name, amount, days) {
+            if(confirm(`Tuma kumbukumbu kwa ${phone}?`)) {
+                alert(`✅ Kumbukumbu imetumwa kwa ${phone}\nNakala kwa 0686527605`);
             }
         }
 
@@ -819,7 +728,6 @@
                     document.getElementById('editClientId').value = data.data.id;
                     document.getElementById('editFullName').value = data.data.full_name;
                     document.getElementById('editPhone').value = data.data.phone_number;
-                    document.getElementById('editEmail').value = data.data.email || '';
                     document.getElementById('editAddress').value = data.data.address || '';
                     document.getElementById('editStatus').value = data.data.status || 'active';
                     document.getElementById('editModal').style.display = 'block';
@@ -833,14 +741,13 @@
             const id = document.getElementById('editClientId').value;
             const full_name = document.getElementById('editFullName').value;
             const phone_number = document.getElementById('editPhone').value;
-            const email = document.getElementById('editEmail').value;
             const address = document.getElementById('editAddress').value;
             const status = document.getElementById('editStatus').value;
             try {
                 const res = await fetch(`${API_URL}/api/clients/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ full_name, phone_number, email, address, status })
+                    body: JSON.stringify({ full_name, phone_number, email: '', address, status })
                 });
                 const data = await res.json();
                 if (data.success) {
