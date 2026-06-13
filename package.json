@@ -1,6 +1,6 @@
 {
   "name": "scholastica-finance",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Scholastica Finance - Microfinance Loan Management System",
   "main": "server.js",
   "scripts": {

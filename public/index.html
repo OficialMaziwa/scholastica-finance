@@ -255,7 +255,7 @@
                 <div id="loginError" class="alert-message alert-error" style="display:none"></div>
                 <div class="input-group">
                     <label>📧 Barua pepe</label>
-                    <input type="text" id="loginIdentifier">
+                    <input type="email" id="loginIdentifier">
                 </div>
                 <div class="input-group">
                     <label>🔒 Neno la siri</label>
@@ -353,17 +353,25 @@
         </div>
     </div>
 
-    <!-- Change Password Modal -->
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>🔑 Umesahau Neno la Siri</h3><span class="close" onclick="closeForgotPasswordModal()">&times;</span></div>
+            <div id="forgotPwdMsg"></div>
+            <div class="form-row"><label>Barua pepe yako</label><input type="email" id="forgotEmail" placeholder="Weka barua pepe yako"></div>
+            <button class="btn" onclick="forgotPassword()">📧 Tuma Neno la Siri Jipya</button>
+        </div>
+    </div>
+
+    <!-- Change Password Modal (while logged in) -->
     <div id="changePasswordModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>🔑 Badilisha Neno la Siri</h3><span class="close" onclick="closeChangePasswordModal()">&times;</span></div>
             <div id="changePwdMsg"></div>
-            <div class="form-row"><label>Barua pepe yako</label><input type="email" id="resetEmail" value="scholamalaba63@gmail.com" readonly></div>
-            <div class="form-row"><label>OTP (itakuja kwa namba 0686527605)</label><input type="text" id="otpCode" placeholder="Weka OTP iliyotumwa"></div>
-            <div class="form-row"><label>Neno la siri jipya</label><input type="password" id="newPassword" placeholder="Neno la siri jipya"></div>
-            <div class="form-row"><label>Rudia neno la siri jipya</label><input type="password" id="confirmNewPassword" placeholder="Rudia neno la siri jipya"></div>
-            <button class="btn" onclick="requestOTP()" id="requestOtpBtn">📱 Tuma OTP</button>
-            <button class="btn" onclick="changePassword()" style="margin-top:10px">💾 Badilisha Neno la Siri</button>
+            <div class="form-row"><label>Neno la siri la sasa</label><input type="password" id="currentPassword"></div>
+            <div class="form-row"><label>Neno la siri jipya</label><input type="password" id="newPassword"></div>
+            <div class="form-row"><label>Rudia neno la siri jipya</label><input type="password" id="confirmNewPassword"></div>
+            <button class="btn" onclick="changePassword()">💾 Badilisha Neno la Siri</button>
         </div>
     </div>
 
@@ -385,7 +393,6 @@
     <script>
         const API_URL = window.location.origin;
         let token = localStorage.getItem('token');
-        let resetEmail = 'scholamalaba63@gmail.com';
 
         if (token) { 
             showDashboard(); 
@@ -431,10 +438,19 @@
             document.getElementById('changePwdBtn').style.display = 'none';
         }
 
+        function openForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'block';
+            document.getElementById('forgotEmail').value = '';
+            document.getElementById('forgotPwdMsg').innerHTML = '';
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+        }
+
         function openChangePasswordModal() {
             document.getElementById('changePasswordModal').style.display = 'block';
-            document.getElementById('resetEmail').value = resetEmail;
-            document.getElementById('otpCode').value = '';
+            document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmNewPassword').value = '';
             document.getElementById('changePwdMsg').innerHTML = '';
@@ -444,44 +460,42 @@
             document.getElementById('changePasswordModal').style.display = 'none';
         }
 
-        async function requestOTP() {
-            const email = document.getElementById('resetEmail').value;
-            const msgDiv = document.getElementById('changePwdMsg');
+        async function forgotPassword() {
+            const email = document.getElementById('forgotEmail').value;
+            const msgDiv = document.getElementById('forgotPwdMsg');
             if (!email) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Barua pepe inahitajika</div>';
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka barua pepe yako</div>';
                 return;
             }
-            msgDiv.innerHTML = '<div class="alert-message alert-info">Inatuma OTP kwa namba 0686527605...</div>';
+            msgDiv.innerHTML = '<div class="alert-message alert-info">Inatuma ombi lako...</div>';
             try {
-                const res = await fetch(`${API_URL}/api/auth/request-otp`, {
+                const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ OTP imetumwa kwa namba 0686527605. Angalia simu yako.</div>';
+                    msgDiv.innerHTML = `<div class="alert-message alert-success">✅ ${data.message}</div>`;
+                    setTimeout(() => {
+                        closeForgotPasswordModal();
+                    }, 3000);
                 } else {
                     msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
                 }
             } catch (err) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>';
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva. Jaribu tena.</div>';
             }
         }
 
         async function changePassword() {
-            const email = document.getElementById('resetEmail').value;
-            const otp = document.getElementById('otpCode').value;
+            const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmNewPassword').value;
             const msgDiv = document.getElementById('changePwdMsg');
             
-            if (!otp) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka OTP</div>';
-                return;
-            }
-            if (!newPassword) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka neno la siri jipya</div>';
+            if (!currentPassword || !newPassword) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali jaza neno la siri la sasa na jipya</div>';
                 return;
             }
             if (newPassword !== confirmPassword) {
@@ -489,19 +503,19 @@
                 return;
             }
             if (newPassword.length < 6) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Neno la siri lazima iwe na herufi 6 au zaidi</div>';
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Neno la siri jipya lazima iwe na herufi 6 au zaidi</div>';
                 return;
             }
             
             try {
                 const res = await fetch(`${API_URL}/api/auth/change-password`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, otp, new_password: newPassword })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Neno la siri limebadilishwa! Sasa unaweza kuingia.</div>';
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Neno la siri limebadilishwa kikamilifu!</div>';
                     setTimeout(() => {
                         closeChangePasswordModal();
                     }, 2000);
@@ -601,7 +615,7 @@
                             <td><span class="badge ${l.status === 'active' ? (l.days_remaining < 0 ? 'badge-overdue' : 'badge-active') : 'badge-completed'}">${l.status === 'active' ? (l.days_remaining < 0 ? 'Imechelewa' : 'Inayoendelea') : 'Imelipwa'}</span></td>
                         </tr>`;
                     });
-                    html += `</tbody>}</table>`;
+                    html += `</tbody>}</tr>`;
                     document.getElementById('loansList').innerHTML = html;
                 } else {
                     document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo</div>';
@@ -626,7 +640,7 @@
                             <td><button class="btn-sm btn-alert" onclick="sendManualAlert('${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
                         </tr>`;
                     });
-                    html += `</tbody>}</table>`;
+                    html += `</tbody>}</tr>`;
                     document.getElementById('defaultersList').innerHTML = html;
                 } else {
                     document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu!</div>';

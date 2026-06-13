@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const path = require('path');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -26,6 +27,15 @@ pool.connect((err, client, release) => {
     }
 });
 
+// Email configuration
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER || 'scholamalaba63@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your-app-password'
+    }
+});
+
 function generateToken(userId, username, role) {
     return jwt.sign({ id: userId, username, role }, process.env.JWT_SECRET || 'scholastica_secret', { expiresIn: '7d' });
 }
@@ -37,15 +47,42 @@ function formatPhoneNumber(phone) {
     return num;
 }
 
-// Generate OTP
-function generateOTP() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+function generateRandomPassword() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 10; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
 }
 
-// Store OTP temporarily (in production use Redis or database)
-const otpStore = new Map();
+// Send SMS Alert
+async function sendSMS(phoneNumber, message) {
+    const adminPhone = '0686527605';
+    console.log(`📱 SMS to: ${phoneNumber}`);
+    console.log(`📱 SMS to admin: ${adminPhone}`);
+    console.log(`📝 Message: ${message}`);
+    return true;
+}
 
-// Send SMS Alert (simulated) and Email
+// Send Email
+async function sendEmail(to, subject, html) {
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER || 'scholamalaba63@gmail.com',
+            to: to,
+            subject: subject,
+            html: html
+        });
+        console.log(`✅ Email sent to: ${to}`);
+        return true;
+    } catch (error) {
+        console.error('Email error:', error.message);
+        return false;
+    }
+}
+
+// Send SMS Alert for loans
 async function sendAlerts(phoneNumber, email, subject, message) {
     const adminPhone = '0686527605';
     const adminEmail = 'scholamalaba63@gmail.com';
@@ -54,16 +91,10 @@ async function sendAlerts(phoneNumber, email, subject, message) {
     console.log(`📱 SMS to admin: ${adminPhone}`);
     console.log(`📧 Email to: ${email}`);
     console.log(`📧 Email to admin: ${adminEmail}`);
-    console.log(`📝 Message: ${message}`);
     
-    return true;
-}
-
-// Send OTP via SMS
-async function sendOTP(phoneNumber, otp) {
-    const adminPhone = '0686527605';
-    console.log(`📱 OTP sent to: ${phoneNumber} - Code: ${otp}`);
-    console.log(`📱 OTP also sent to admin: ${adminPhone}`);
+    await sendSMS(phoneNumber, message);
+    await sendEmail(email, subject, message);
+    
     return true;
 }
 
@@ -133,61 +164,101 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// Request OTP for password change
-app.post('/api/auth/request-otp', async (req, res) => {
+// Forgot Password - Send new password to email
+app.post('/api/auth/forgot-password', async (req, res) => {
     const { email } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ success: false, message: 'Barua pepe inahitajika' });
+    }
+    
     try {
-        const result = await pool.query(`SELECT id, username, email, phone FROM users WHERE email = $1`, [email]);
+        const result = await pool.query(`SELECT id, username, full_name FROM users WHERE email = $1`, [email]);
+        
         if (result.rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'Email haijasajiliwa' });
+            return res.status(404).json({ success: false, message: 'Barua pepe hii haijasajiliwa kwenye mfumo' });
         }
         
         const user = result.rows[0];
-        const otp = generateOTP();
-        const phoneNumber = '0686527605'; // Admin phone number
+        const newPassword = generateRandomPassword();
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(newPassword, salt);
         
-        otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 }); // 10 minutes expiry
+        await pool.query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [password_hash, user.id]);
         
-        await sendOTP(phoneNumber, otp);
+        const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
+                <div style="background: linear-gradient(135deg, #0f2b4d, #1a4a7a); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
+                    <h2>🏦 SCHOLASTICA FINANCE</h2>
+                    <p>Mfumo wa Usimamizi wa Mikopo</p>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: 0 0 10px 10px;">
+                    <h3>Habari ${user.full_name},</h3>
+                    <p>Umeomba kubadilisha neno lako la siri. Hili ni neno lako jipya la siri:</p>
+                    <div style="background: #f0f2f5; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 2px; border-radius: 8px; margin: 20px 0;">
+                        ${newPassword}
+                    </div>
+                    <p>Tafadhali ingia kwenye mfumo kwa kutumia neno hili jipya, kisha ubadilishe kwenye dashboard kwa neno la siri utakalokumbuka.</p>
+                    <p style="margin-top: 20px; color: #666; font-size: 12px;">Ukiwa hujaomba kubadilisha neno la siri, tafadhali wasiliana na msimamizi.</p>
+                    <hr style="margin: 20px 0;">
+                    <p style="color: #888; font-size: 12px;">© 2024 Scholastica Finance. All rights reserved.</p>
+                </div>
+            </div>
+        `;
         
-        res.json({ success: true, message: 'OTP imetumwa kwa namba 0686527605' });
+        await sendEmail(email, 'SCHOLASTICA FINANCE - Neno lako jipya la siri', html);
+        
+        // Also send SMS to admin phone
+        await sendSMS('0686527605', `Password imebadilishwa kwa user ${user.username}. New password: ${newPassword}`);
+        
+        res.json({ success: true, message: 'Neno lako jipya la siri limetumwa kwa barua pepe yako. Angalia email yako.' });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error('Forgot password error:', error);
+        res.status(500).json({ success: false, message: 'Server error. Tafadhali jaribu tena.' });
     }
 });
 
-// Verify OTP and change password
+// Change Password (while logged in)
 app.post('/api/auth/change-password', async (req, res) => {
-    const { email, otp, new_password } = req.body;
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Haujaingia mfumo' });
+    }
     
-    if (!email || !otp || !new_password) {
-        return res.status(400).json({ success: false, message: 'Email, OTP na password mpya zinahitajika' });
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET || 'scholastica_secret');
+    } catch (err) {
+        return res.status(401).json({ success: false, message: 'Token si sahihi' });
+    }
+    
+    const { current_password, new_password } = req.body;
+    
+    if (!current_password || !new_password) {
+        return res.status(400).json({ success: false, message: 'Neno la siri la sasa na jipya vinahitajika' });
+    }
+    
+    if (new_password.length < 6) {
+        return res.status(400).json({ success: false, message: 'Neno la siri jipya lazima iwe na herufi 6 au zaidi' });
     }
     
     try {
-        const storedOtp = otpStore.get(email);
-        if (!storedOtp) {
-            return res.status(400).json({ success: false, message: 'OTP haijapatikana. Tuma OTP mpya.' });
-        }
+        const result = await pool.query(`SELECT password_hash FROM users WHERE id = $1`, [decoded.id]);
+        const user = result.rows[0];
         
-        if (storedOtp.expires < Date.now()) {
-            otpStore.delete(email);
-            return res.status(400).json({ success: false, message: 'OTP imeisha muda. Tuma OTP mpya.' });
-        }
-        
-        if (storedOtp.otp !== otp) {
-            return res.status(400).json({ success: false, message: 'OTP si sahihi' });
+        const isValid = await bcrypt.compare(current_password, user.password_hash);
+        if (!isValid) {
+            return res.status(401).json({ success: false, message: 'Neno la siri la sasa si sahihi' });
         }
         
         const salt = await bcrypt.genSalt(10);
-        const password_hash = await bcrypt.hash(new_password, salt);
+        const new_password_hash = await bcrypt.hash(new_password, salt);
         
-        await pool.query(`UPDATE users SET password_hash = $1 WHERE email = $2`, [password_hash, email]);
+        await pool.query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [new_password_hash, decoded.id]);
         
-        otpStore.delete(email);
-        
-        res.json({ success: true, message: 'Password imebadilishwa kikamilifu!' });
+        res.json({ success: true, message: 'Neno la siri limebadilishwa kikamilifu!' });
     } catch (error) {
+        console.error('Change password error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
@@ -372,5 +443,6 @@ app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'En
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { 
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
-    console.log(`📱 Admin phone for alerts: 0686527605`);
+    console.log(`📱 Admin phone: 0686527605`);
+    console.log(`📧 Admin email: scholamalaba63@gmail.com`);
 });
