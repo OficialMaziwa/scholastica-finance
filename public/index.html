@@ -15,7 +15,6 @@
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Header */
         .header { 
             background: linear-gradient(135deg, #0f2b4d, #1a4a7a); 
             color: white; 
@@ -37,18 +36,19 @@
         }
         .logo h1 { font-size: clamp(18px, 5vw, 24px); letter-spacing: 0.5px; }
         .logo p { font-size: clamp(10px, 3vw, 12px); opacity: 0.8; margin-top: 4px; }
-        .logout-btn { 
+        .logout-btn, .change-pwd-btn { 
             background: rgba(255,255,255,0.2); 
             border: none; 
             color: white; 
-            padding: 8px 20px; 
+            padding: 8px 16px; 
             border-radius: 30px; 
             cursor: pointer; 
             font-weight: 600; 
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.3s; 
+            margin-left: 8px;
         }
-        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        .logout-btn:hover, .change-pwd-btn:hover { background: rgba(255,255,255,0.3); }
         
         .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; }
         
@@ -87,10 +87,17 @@
             width: 100%; 
             transition: all 0.3s; 
         }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        .demo-text { text-align: center; margin-top: 18px; color: #888; font-size: 12px; }
+        .btn:hover { opacity: 0.9; }
+        .link-btn { 
+            background: none; 
+            color: #1a4a7a; 
+            text-decoration: underline; 
+            margin-top: 15px; 
+            font-size: 13px;
+        }
+        .link-btn:hover { background: none; opacity: 0.8; }
         
-        /* Stats Cards - Responsive */
+        /* Stats Cards */
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
@@ -103,15 +110,13 @@
             padding: 14px 10px; 
             text-align: center; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
-            transition: transform 0.2s;
         }
-        .stat-card:hover { transform: translateY(-2px); }
-        .stat-card h3 { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-number { font-size: 16px; font-weight: 800; color: #1a4a7a; word-break: break-word; }
+        .stat-card h3 { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; }
+        .stat-number { font-size: 16px; font-weight: 800; color: #1a4a7a; }
         .stat-number.warning { color: #e74c3c; }
         .stat-number.success { color: #27ae60; }
         
-        /* Tabs - Responsive */
+        /* Tabs */
         .tabs-wrapper { 
             background: white; 
             border-radius: 14px; 
@@ -120,7 +125,6 @@
             display: flex; 
             flex-wrap: wrap; 
             gap: 6px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
         }
         .tab { 
             padding: 10px 16px; 
@@ -139,12 +143,10 @@
         .tab:hover { background: #f0f0f0; color: #1a4a7a; }
         .tab.active { background: linear-gradient(135deg, #1a4a7a, #0f2b4d); color: white; }
         
-        /* Tab Content */
         .tab-content { display: none; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Sort Bar */
         .sort-bar { 
             display: flex; 
             gap: 10px; 
@@ -164,22 +166,19 @@
             cursor: pointer;
         }
         
-        /* Tables - Responsive with horizontal scroll */
         .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
         .data-table th, .data-table td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
         .data-table th { background: #f8f9fa; font-weight: 700; color: #333; font-size: 12px; }
         .data-table tr:hover { background: #fafafa; }
         
-        /* Badges */
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .badge-active { background: #e8f5e9; color: #2e7d32; }
         .badge-overdue { background: #ffebee; color: #c62828; }
         .badge-completed { background: #e3f2fd; color: #1565c0; }
         .badge-warning { background: #fff3e0; color: #ef6c00; }
         
-        /* Buttons */
-        .btn-sm { padding: 5px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; margin: 2px; transition: all 0.2s; }
+        .btn-sm { padding: 5px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; margin: 2px; }
         .btn-edit { background: #ff9800; color: white; }
         .btn-edit:hover { background: #f57c00; }
         .btn-delete { background: #f44336; color: white; }
@@ -187,7 +186,6 @@
         .btn-alert { background: #2196f3; color: white; }
         .btn-alert:hover { background: #1976d2; }
         
-        /* Forms */
         .form-card { background: #fafafa; border-radius: 14px; padding: 20px; }
         .form-row { margin-bottom: 18px; }
         .form-row label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 13px; }
@@ -200,22 +198,19 @@
         }
         .form-row input:focus, .form-row select:focus { outline: none; border-color: #1a4a7a; }
         
-        /* Messages */
         .alert-message { padding: 12px 15px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; }
         .alert-error { background: #ffebee; color: #c62828; border-left: 4px solid #c62828; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #2e7d32; }
         .alert-info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
         
-        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
-        .modal-content { background: white; margin: 15% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 450px; animation: slideIn 0.2s ease; }
+        .modal-content { background: white; margin: 10% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 450px; animation: slideIn 0.2s ease; }
         @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h3 { color: #0f2b4d; font-size: 18px; }
         .close { font-size: 26px; cursor: pointer; color: #999; }
         .close:hover { color: #333; }
         
-        /* Payment History */
         .payment-history { background: #fafafa; border-radius: 14px; overflow: hidden; }
         .payment-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; gap: 10px; }
         .payment-item:hover { background: white; }
@@ -225,7 +220,6 @@
         
         .section-title { font-size: 16px; font-weight: 700; color: #0f2b4d; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 3px solid #1a4a7a; display: inline-block; }
         
-        /* Mobile optimizations */
         @media (max-width: 768px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .stat-number { font-size: 13px; }
@@ -233,15 +227,8 @@
             .data-table th, .data-table td { padding: 8px 5px; font-size: 11px; }
             .payment-item { flex-direction: column; text-align: center; }
             .payment-details { text-align: center; }
-            .logo h1 { font-size: 18px; }
             .header-content { flex-direction: column; text-align: center; }
-        }
-        
-        @media (max-width: 480px) {
-            .container { padding: 0 12px; }
-            .tab-content { padding: 15px; }
-            .stat-card { padding: 10px 5px; }
-            .stat-number { font-size: 11px; }
+            .change-pwd-btn, .logout-btn { margin: 5px 0; }
         }
     </style>
 </head>
@@ -252,7 +239,10 @@
                 <h1>🏦 SCHOLASTICA FINANCE</h1>
                 <p>Mfumo wa Usimamizi wa Mikopo</p>
             </div>
-            <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">🚪 Toka</button>
+            <div>
+                <button class="change-pwd-btn" id="changePwdBtn" style="display:none" onclick="openChangePasswordModal()">🔑 Badilisha Neno la Siri</button>
+                <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">🚪 Toka</button>
+            </div>
         </div>
     </div>
 
@@ -264,15 +254,15 @@
                 <div class="subtitle">Tafadhali ingia kwenye mfumo wako</div>
                 <div id="loginError" class="alert-message alert-error" style="display:none"></div>
                 <div class="input-group">
-                    <label>📧 Barua pepe au Jina la mtumiaji</label>
-                    <input type="text" id="loginIdentifier" placeholder="scholamalaba63@gmail.com">
+                    <label>📧 Barua pepe</label>
+                    <input type="text" id="loginIdentifier">
                 </div>
                 <div class="input-group">
                     <label>🔒 Neno la siri</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••">
+                    <input type="password" id="loginPassword">
                 </div>
                 <button class="btn" onclick="login()">🔓 INGIA</button>
-                <div class="demo-text">Demo: scholamalaba63@gmail.com / Kasenga@23</div>
+                <button class="btn link-btn" onclick="openForgotPasswordModal()">🔑 Umesahau neno la siri?</button>
             </div>
         </div>
 
@@ -282,9 +272,9 @@
             
             <div class="tabs-wrapper">
                 <button class="tab" onclick="showTab('clients')">👥 WATEJA</button>
-                <button class="tab" onclick="showTab('loans')">💰 MIKOPO INAYOENDELEA</button>
+                <button class="tab" onclick="showTab('loans')">💰 MIKOPO</button>
                 <button class="tab" onclick="showTab('defaulters')">⚠️ WADAIWA SUGU</button>
-                <button class="tab" onclick="showTab('upcoming')">⏰ INAKARIBIA KUISHA</button>
+                <button class="tab" onclick="showTab('upcoming')">⏰ KARIBIA KUISHA</button>
                 <button class="tab" onclick="showTab('payments')">💵 MALIPO</button>
                 <button class="tab" onclick="showTab('addClient')">➕ MTEJA MPYA</button>
                 <button class="tab" onclick="showTab('addLoan')">📋 MKOPO MPYA</button>
@@ -297,7 +287,7 @@
             </div>
 
             <div id="loansTab" class="tab-content">
-                <h3 class="section-title">💰 MIKOPO INAYOENDELEA</h3>
+                <h3 class="section-title">💰 MIKOPO YOTE</h3>
                 <div class="sort-bar">
                     <label>🔽 Panga kwa:</label>
                     <select id="loanSort" class="sort-select" onchange="loadLoans()">
@@ -312,12 +302,12 @@
             </div>
 
             <div id="defaultersTab" class="tab-content">
-                <h3 class="section-title">⚠️ WADAIWA SUGU (WALIOSHINDWA KULIPA)</h3>
+                <h3 class="section-title">⚠️ WADAIWA SUGU</h3>
                 <div class="table-wrapper" id="defaultersList"></div>
             </div>
 
             <div id="upcomingTab" class="tab-content">
-                <h3 class="section-title">⏰ MIKOPO INAYOKARIBIA KUISHA (SIKU 5)</h3>
+                <h3 class="section-title">⏰ MIKOPO INAYOKARIBIA KUISHA</h3>
                 <div class="table-wrapper" id="upcomingList"></div>
             </div>
 
@@ -330,10 +320,10 @@
                 <h3 class="section-title">➕ MTEJA MPYA</h3>
                 <div id="addClientMsg"></div>
                 <div class="form-card">
-                    <div class="form-row"><label>Jina kamili *</label><input type="text" id="clientName" placeholder="Mfano: John Mwema"></div>
-                    <div class="form-row"><label>Namba ya simu *</label><input type="text" id="clientPhone" placeholder="0712345678"></div>
-                    <div class="form-row"><label>Barua pepe</label><input type="email" id="clientEmail" placeholder="mteja@example.com"></div>
-                    <div class="form-row"><label>Anuani</label><input type="text" id="clientAddress" placeholder="Dar es Salaam"></div>
+                    <div class="form-row"><label>Jina kamili *</label><input type="text" id="clientName"></div>
+                    <div class="form-row"><label>Namba ya simu *</label><input type="text" id="clientPhone"></div>
+                    <div class="form-row"><label>Barua pepe</label><input type="email" id="clientEmail"></div>
+                    <div class="form-row"><label>Anuani</label><input type="text" id="clientAddress"></div>
                     <button class="btn" onclick="addClient()">💾 HIFADHI MTEJA</button>
                 </div>
             </div>
@@ -343,9 +333,9 @@
                 <div id="addLoanMsg"></div>
                 <div class="form-card">
                     <div class="form-row"><label>Mteja *</label><select id="loanClientId"></select></div>
-                    <div class="form-row"><label>Kiasi (TZS) *</label><input type="number" id="loanAmount" placeholder="500,000"></div>
-                    <div class="form-row"><label>Riba (%) *</label><input type="number" id="loanInterest" placeholder="5" value="5"></div>
-                    <div class="form-row"><label>Muda (miezi) *</label><input type="number" id="loanDuration" placeholder="6" value="6"></div>
+                    <div class="form-row"><label>Kiasi (TZS) *</label><input type="number" id="loanAmount"></div>
+                    <div class="form-row"><label>Riba (%) *</label><input type="number" id="loanInterest" value="5"></div>
+                    <div class="form-row"><label>Muda (miezi) *</label><input type="number" id="loanDuration" value="6"></div>
                     <button class="btn" onclick="addLoan()">💰 TOA MKOPO</button>
                 </div>
             </div>
@@ -355,7 +345,7 @@
                 <div id="paymentMsg"></div>
                 <div class="form-card">
                     <div class="form-row"><label>Chagua mkopo *</label><select id="paymentLoanId"></select></div>
-                    <div class="form-row"><label>Kiasi cha kulipa (TZS) *</label><input type="number" id="paymentAmount" placeholder="Kiasi cha kulipa"></div>
+                    <div class="form-row"><label>Kiasi cha kulipa (TZS) *</label><input type="number" id="paymentAmount"></div>
                     <div class="form-row"><label>Njia ya malipo</label><select id="paymentMethod"><option value="cash">💵 Pesa taslimu</option><option value="bank">🏦 Benki</option><option value="mobile">📱 M-Pesa / Tigo Pesa</option></select></div>
                     <button class="btn" onclick="makePayment()">💵 REKODI MALIPO</button>
                 </div>
@@ -363,6 +353,21 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>🔑 Badilisha Neno la Siri</h3><span class="close" onclick="closeChangePasswordModal()">&times;</span></div>
+            <div id="changePwdMsg"></div>
+            <div class="form-row"><label>Barua pepe yako</label><input type="email" id="resetEmail" value="scholamalaba63@gmail.com" readonly></div>
+            <div class="form-row"><label>OTP (itakuja kwa namba 0686527605)</label><input type="text" id="otpCode" placeholder="Weka OTP iliyotumwa"></div>
+            <div class="form-row"><label>Neno la siri jipya</label><input type="password" id="newPassword" placeholder="Neno la siri jipya"></div>
+            <div class="form-row"><label>Rudia neno la siri jipya</label><input type="password" id="confirmNewPassword" placeholder="Rudia neno la siri jipya"></div>
+            <button class="btn" onclick="requestOTP()" id="requestOtpBtn">📱 Tuma OTP</button>
+            <button class="btn" onclick="changePassword()" style="margin-top:10px">💾 Badilisha Neno la Siri</button>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>✏️ HARIRI TAARIFA</h3><span class="close" onclick="closeModal()">&times;</span></div>
@@ -380,6 +385,7 @@
     <script>
         const API_URL = window.location.origin;
         let token = localStorage.getItem('token');
+        let resetEmail = 'scholamalaba63@gmail.com';
 
         if (token) { 
             showDashboard(); 
@@ -391,7 +397,7 @@
             const errorDiv = document.getElementById('loginError');
             if (!identifier || !password) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerText = 'Tafadhali jaza barua pepe/jina na neno la siri';
+                errorDiv.innerText = 'Tafadhali jaza barua pepe na neno la siri';
                 return;
             }
             errorDiv.style.display = 'none';
@@ -422,12 +428,96 @@
             document.getElementById('loginSection').style.display = 'flex';
             document.getElementById('dashboardSection').style.display = 'none';
             document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('changePwdBtn').style.display = 'none';
+        }
+
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'block';
+            document.getElementById('resetEmail').value = resetEmail;
+            document.getElementById('otpCode').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            document.getElementById('changePwdMsg').innerHTML = '';
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        }
+
+        async function requestOTP() {
+            const email = document.getElementById('resetEmail').value;
+            const msgDiv = document.getElementById('changePwdMsg');
+            if (!email) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Barua pepe inahitajika</div>';
+                return;
+            }
+            msgDiv.innerHTML = '<div class="alert-message alert-info">Inatuma OTP kwa namba 0686527605...</div>';
+            try {
+                const res = await fetch(`${API_URL}/api/auth/request-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ OTP imetumwa kwa namba 0686527605. Angalia simu yako.</div>';
+                } else {
+                    msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>';
+            }
+        }
+
+        async function changePassword() {
+            const email = document.getElementById('resetEmail').value;
+            const otp = document.getElementById('otpCode').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            const msgDiv = document.getElementById('changePwdMsg');
+            
+            if (!otp) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka OTP</div>';
+                return;
+            }
+            if (!newPassword) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka neno la siri jipya</div>';
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Neno la siri jipya na kurudia havilingani</div>';
+                return;
+            }
+            if (newPassword.length < 6) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Neno la siri lazima iwe na herufi 6 au zaidi</div>';
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/api/auth/change-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp, new_password: newPassword })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Neno la siri limebadilishwa! Sasa unaweza kuingia.</div>';
+                    setTimeout(() => {
+                        closeChangePasswordModal();
+                    }, 2000);
+                } else {
+                    msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>';
+            }
         }
 
         async function showDashboard() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('dashboardSection').style.display = 'block';
-            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+            document.getElementById('changePwdBtn').style.display = 'inline-block';
             await loadDashboard();
             await loadClients();
             await loadLoans();
@@ -514,7 +604,7 @@
                     html += `</tbody>}</table>`;
                     document.getElementById('loansList').innerHTML = html;
                 } else {
-                    document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo iliyotolewa</div>';
+                    document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo</div>';
                 }
             } catch (err) { document.getElementById('loansList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
@@ -539,7 +629,7 @@
                     html += `</tbody>}</table>`;
                     document.getElementById('defaultersList').innerHTML = html;
                 } else {
-                    document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu! Wateja wote wanalipa kwa wakati.</div>';
+                    document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu!</div>';
                 }
             } catch (err) { document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
@@ -564,7 +654,7 @@
                     html += `</tbody>}</table>`;
                     document.getElementById('upcomingList').innerHTML = html;
                 } else {
-                    document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo inayokaribia tarehe ya malipo</div>';
+                    document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo inayokaribia</div>';
                 }
             } catch (err) { document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
@@ -577,23 +667,17 @@
                     let html = `<div class="payment-history">`;
                     data.data.forEach(p => {
                         html += `<div class="payment-item">
-                            <div class="payment-info">
-                                <div><strong>${p.client_name}</strong> - Mkopo TZS ${Number(p.amount_borrowed).toLocaleString()}</div>
-                                <div class="payment-date">📅 ${new Date(p.payment_date).toLocaleDateString('sw-TZ')}</div>
-                                <div class="payment-method">💰 ${p.payment_method === 'cash' ? 'Pesa Taslimu' : (p.payment_method === 'bank' ? 'Benki' : 'M-Pesa')}</div>
-                            </div>
-                            <div class="payment-details">
-                                <div class="payment-amount">TZS ${Number(p.amount).toLocaleString()}</div>
-                                <div style="font-size: 11px; color:#888;">Kiti: ${p.receipt_number || '-'}</div>
-                            </div>
+                            <div><strong>${p.client_name}</strong> - TZS ${Number(p.amount_borrowed).toLocaleString()}</div>
+                            <div>💵 TZS ${Number(p.amount).toLocaleString()}</div>
+                            <div>📅 ${new Date(p.payment_date).toLocaleDateString()}</div>
                         </div>`;
                     });
                     html += `</div>`;
                     document.getElementById('paymentsList').innerHTML = html;
                 } else {
-                    document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-info">Hakuna malipo yaliyorekodiwa</div>';
+                    document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-info">Hakuna malipo</div>';
                 }
-            } catch (err) { document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
+            } catch (err) { document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
 
         async function loadClientsForSelect() {
@@ -639,8 +723,11 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mteja ameongezwa kikamilifu!</div>';
-                    document.getElementById('clientName').value = ''; document.getElementById('clientPhone').value = ''; document.getElementById('clientEmail').value = ''; document.getElementById('clientAddress').value = '';
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mteja ameongezwa!</div>';
+                    document.getElementById('clientName').value = '';
+                    document.getElementById('clientPhone').value = '';
+                    document.getElementById('clientEmail').value = '';
+                    document.getElementById('clientAddress').value = '';
                     loadClients(); loadClientsForSelect(); loadDashboard();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
                 } else { msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`; }
@@ -666,8 +753,8 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mkopo umetolewa kikamilifu!</div>';
-                    document.getElementById('loanAmount').value = ''; document.getElementById('loanInterest').value = '5'; document.getElementById('loanDuration').value = '6';
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mkopo umetolewa!</div>';
+                    document.getElementById('loanAmount').value = '';
                     loadLoans(); loadLoansForPayment(); loadDashboard(); loadDefaulters(); loadUpcoming();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
                 } else { msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`; }
@@ -679,7 +766,7 @@
             const amount = document.getElementById('paymentAmount').value;
             const method = document.getElementById('paymentMethod').value;
             const msgDiv = document.getElementById('paymentMsg');
-            if (!loanId || !amount || amount <= 0) { msgDiv.innerHTML = '<div class="alert-message alert-error">Chagua mkopo na ingiza kiasi halali</div>'; return; }
+            if (!loanId || !amount || amount <= 0) { msgDiv.innerHTML = '<div class="alert-message alert-error">Chagua mkopo na ingiza kiasi</div>'; return; }
             try {
                 const res = await fetch(`${API_URL}/api/payments`, {
                     method: 'POST',
@@ -697,18 +784,16 @@
         }
 
         function sendManualAlert(phone, email, name, balance, days) {
-            const message = `TAHADHARI: Mteja ${name} amechelewa kulipa mkopo kwa siku ${days}. Salio: TZS ${Number(balance).toLocaleString()}. Tafadhali wasiliana naye. - Scholastica Finance`;
+            const message = `TAHADHARI: Mteja ${name} amechelewa kulipa mkopo kwa siku ${days}. Salio: TZS ${Number(balance).toLocaleString()}. - Scholastica Finance`;
             if(confirm(`Tuma alert kwa ${phone} na ${email}?`)) {
-                alert(`✅ Alert imetumwa kwa ${phone} na ${email}\nNakala kwa 0762004163 na scholamalaba63@gmail.com`);
-                console.log(`SMS/Email sent to: ${phone}, ${email}`);
+                alert(`✅ Alert imetumwa kwa ${phone} na ${email}\nNakala kwa 0686527605 na scholamalaba63@gmail.com`);
             }
         }
 
         function sendUpcomingAlert(phone, email, name, amount, days) {
             const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(amount).toLocaleString()} unatarajiwa kulipa baada ya siku ${days}. Lipa kabla ya muda. - Scholastica Finance`;
             if(confirm(`Tuma kumbukumbu kwa ${phone} na ${email}?`)) {
-                alert(`✅ Kumbukumbu imetumwa kwa ${phone} na ${email}\nNakala kwa 0762004163 na scholamalaba63@gmail.com`);
-                console.log(`SMS/Email sent to: ${phone}, ${email}`);
+                alert(`✅ Kumbukumbu imetumwa kwa ${phone} na ${email}\nNakala kwa 0686527605 na scholamalaba63@gmail.com`);
             }
         }
 
@@ -748,13 +833,13 @@
                     closeModal();
                     loadClients();
                     loadDashboard();
-                    alert('Taarifa zimehaririwa kikamilifu!');
+                    alert('Taarifa zimehaririwa!');
                 } else { alert('Tatizo: ' + data.message); }
             } catch (err) { alert('Tatizo la seva'); }
         }
 
         async function deleteClient(id) {
-            if (confirm('Una uhakika unataka kumfuta mteja huyu kabisa? Hatua haiwezi kubatilishwa.')) {
+            if (confirm('Una uhakika unataka kumfuta mteja huyu kabisa?')) {
                 try {
                     const res = await fetch(`${API_URL}/api/clients/${id}`, {
                         method: 'DELETE',
@@ -764,7 +849,7 @@
                     if (data.success) {
                         loadClients();
                         loadDashboard();
-                        alert('Mteja amefutwa kabisa kwenye database!');
+                        alert('Mteja amefutwa kabisa!');
                     } else { alert(data.message); }
                 } catch (err) { alert('Tatizo la seva'); }
             }

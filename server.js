@@ -37,9 +37,17 @@ function formatPhoneNumber(phone) {
     return num;
 }
 
+// Generate OTP
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Store OTP temporarily (in production use Redis or database)
+const otpStore = new Map();
+
 // Send SMS Alert (simulated) and Email
 async function sendAlerts(phoneNumber, email, subject, message) {
-    const adminPhone = '0762004163';
+    const adminPhone = '0686527605';
     const adminEmail = 'scholamalaba63@gmail.com';
     
     console.log(`📱 SMS to: ${phoneNumber}`);
@@ -47,8 +55,15 @@ async function sendAlerts(phoneNumber, email, subject, message) {
     console.log(`📧 Email to: ${email}`);
     console.log(`📧 Email to admin: ${adminEmail}`);
     console.log(`📝 Message: ${message}`);
-    console.log(`📋 Subject: ${subject}`);
     
+    return true;
+}
+
+// Send OTP via SMS
+async function sendOTP(phoneNumber, otp) {
+    const adminPhone = '0686527605';
+    console.log(`📱 OTP sent to: ${phoneNumber} - Code: ${otp}`);
+    console.log(`📱 OTP also sent to admin: ${adminPhone}`);
     return true;
 }
 
@@ -82,7 +97,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 
 app.get('/api', (req, res) => {
-    res.json({ success: true, message: 'Scholastica Finance API v3.0' });
+    res.json({ success: true, message: 'Scholastica Finance API v4.0' });
 });
 
 app.get('/health', (req, res) => { res.json({ status: 'OK', timestamp: new Date().toISOString() }); });
@@ -116,6 +131,65 @@ app.post('/api/auth/login', async (req, res) => {
         const token = generateToken(user.id, user.username, user.role);
         res.json({ success: true, data: { id: user.id, username: user.username, email: user.email, full_name: user.full_name, role: user.role }, token });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
+});
+
+// Request OTP for password change
+app.post('/api/auth/request-otp', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const result = await pool.query(`SELECT id, username, email, phone FROM users WHERE email = $1`, [email]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Email haijasajiliwa' });
+        }
+        
+        const user = result.rows[0];
+        const otp = generateOTP();
+        const phoneNumber = '0686527605'; // Admin phone number
+        
+        otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 }); // 10 minutes expiry
+        
+        await sendOTP(phoneNumber, otp);
+        
+        res.json({ success: true, message: 'OTP imetumwa kwa namba 0686527605' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Verify OTP and change password
+app.post('/api/auth/change-password', async (req, res) => {
+    const { email, otp, new_password } = req.body;
+    
+    if (!email || !otp || !new_password) {
+        return res.status(400).json({ success: false, message: 'Email, OTP na password mpya zinahitajika' });
+    }
+    
+    try {
+        const storedOtp = otpStore.get(email);
+        if (!storedOtp) {
+            return res.status(400).json({ success: false, message: 'OTP haijapatikana. Tuma OTP mpya.' });
+        }
+        
+        if (storedOtp.expires < Date.now()) {
+            otpStore.delete(email);
+            return res.status(400).json({ success: false, message: 'OTP imeisha muda. Tuma OTP mpya.' });
+        }
+        
+        if (storedOtp.otp !== otp) {
+            return res.status(400).json({ success: false, message: 'OTP si sahihi' });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(new_password, salt);
+        
+        await pool.query(`UPDATE users SET password_hash = $1 WHERE email = $2`, [password_hash, email]);
+        
+        otpStore.delete(email);
+        
+        res.json({ success: true, message: 'Password imebadilishwa kikamilifu!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 // ==================== CLIENTS ====================
@@ -185,7 +259,6 @@ app.get('/api/loans/all', async (req, res) => {
     else if (sort === 'amount_asc') orderBy = 'l.amount_borrowed ASC';
     else if (sort === 'amount_desc') orderBy = 'l.amount_borrowed DESC';
     else if (sort === 'due_date_asc') orderBy = 'l.due_date ASC';
-    else if (sort === 'due_date_desc') orderBy = 'l.due_date DESC';
     
     try {
         const result = await pool.query(`
@@ -294,20 +367,10 @@ app.get('/api/reports/dashboard', async (req, res) => {
     }
 });
 
-// Manual alert trigger
-app.post('/api/send-alert', async (req, res) => {
-    const { phone_number, email, subject, message } = req.body;
-    try {
-        await sendAlerts(phone_number, email, subject, message);
-        res.json({ success: true, message: 'Alert sent successfully' });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
 app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'Endpoint haipatikani' }); });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { 
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
+    console.log(`📱 Admin phone for alerts: 0686527605`);
 });
