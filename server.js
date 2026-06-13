@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const path = require('path');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -38,38 +37,17 @@ function formatPhoneNumber(phone) {
     return num;
 }
 
-// Email configuration
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER || 'scholamalaba63@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
-    }
-});
-
 // Send SMS Alert (simulated) and Email
 async function sendAlerts(phoneNumber, email, subject, message) {
     const adminPhone = '0762004163';
     const adminEmail = 'scholamalaba63@gmail.com';
     
-    console.log(`📱 SMS would be sent to: ${phoneNumber}`);
-    console.log(`📱 SMS also to admin: ${adminPhone}`);
-    console.log(`📧 Email would be sent to: ${email}`);
-    console.log(`📧 Email also to admin: ${adminEmail}`);
+    console.log(`📱 SMS to: ${phoneNumber}`);
+    console.log(`📱 SMS to admin: ${adminPhone}`);
+    console.log(`📧 Email to: ${email}`);
+    console.log(`📧 Email to admin: ${adminEmail}`);
     console.log(`📝 Message: ${message}`);
-    
-    // Send email via nodemailer (requires configuration)
-    try {
-        await transporter.sendMail({
-            from: adminEmail,
-            to: [email, adminEmail],
-            subject: subject,
-            text: message
-        });
-        console.log('✅ Email sent successfully');
-    } catch (error) {
-        console.error('Email error:', error.message);
-    }
+    console.log(`📋 Subject: ${subject}`);
     
     return true;
 }
@@ -97,7 +75,6 @@ async function checkAndSendAlerts() {
     }
 }
 
-// Run alert check every hour
 setInterval(checkAndSendAlerts, 60 * 60 * 1000);
 checkAndSendAlerts();
 
@@ -144,7 +121,7 @@ app.post('/api/auth/login', async (req, res) => {
 // ==================== CLIENTS ====================
 app.get('/api/clients', async (req, res) => {
     try {
-        const result = await pool.query(`SELECT * FROM clients WHERE status != 'deleted' ORDER BY created_at DESC`);
+        const result = await pool.query(`SELECT * FROM clients ORDER BY created_at DESC`);
         res.json({ success: true, data: result.rows });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
@@ -188,26 +165,17 @@ app.put('/api/clients/:id', async (req, res) => {
 app.delete('/api/clients/:id', async (req, res) => {
     const clientId = req.params.id;
     try {
-        // Check if client has active loans
         const activeLoans = await pool.query(`SELECT COUNT(*) FROM loans WHERE client_id = $1 AND status = 'active'`, [clientId]);
         if (parseInt(activeLoans.rows[0].count) > 0) {
-            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayoendelea. Maliza mikopo kwanza.' });
+            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayoendelea' });
         }
-        
-        // HARD DELETE - completely remove from database
         const result = await pool.query(`DELETE FROM clients WHERE id = $1 RETURNING *`, [clientId]);
-        
-        if (result.rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
-        }
-        
-        res.json({ success: true, message: 'Mteja amefutwa kabisa kwenye database', data: result.rows[0] });
-    } catch (error) { 
-        res.status(500).json({ success: false, message: 'Server error' }); 
-    }
+        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
+        res.json({ success: true, message: 'Mteja amefutwa kabisa', data: result.rows[0] });
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// ==================== LOANS WITH SORTING ====================
+// ==================== LOANS ====================
 app.get('/api/loans/all', async (req, res) => {
     const { sort } = req.query;
     let orderBy = 'l.created_at DESC';
@@ -226,7 +194,6 @@ app.get('/api/loans/all', async (req, res) => {
                    CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue 
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
-            WHERE c.status != 'deleted' 
             ORDER BY ${orderBy}
         `);
         res.json({ success: true, data: result.rows });
@@ -240,7 +207,7 @@ app.get('/api/loans/defaulters', async (req, res) => {
                    (CURRENT_DATE - l.due_date) as days_overdue 
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
-            WHERE l.status = 'active' AND CURRENT_DATE > l.due_date AND c.status != 'deleted' 
+            WHERE l.status = 'active' AND CURRENT_DATE > l.due_date 
             ORDER BY l.due_date ASC
         `);
         res.json({ success: true, data: result.rows });
@@ -254,7 +221,7 @@ app.get('/api/loans/upcoming', async (req, res) => {
                    (l.due_date - CURRENT_DATE) as days_remaining 
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
-            WHERE l.status = 'active' AND CURRENT_DATE <= l.due_date AND (l.due_date - CURRENT_DATE) <= 5 AND c.status != 'deleted' 
+            WHERE l.status = 'active' AND CURRENT_DATE <= l.due_date AND (l.due_date - CURRENT_DATE) <= 5 
             ORDER BY l.due_date ASC
         `);
         res.json({ success: true, data: result.rows });
@@ -304,7 +271,7 @@ app.post('/api/payments', async (req, res) => {
 // ==================== REPORTS ====================
 app.get('/api/reports/dashboard', async (req, res) => {
     try {
-        const totalClients = await pool.query(`SELECT COUNT(*) FROM clients WHERE status = 'active'`);
+        const totalClients = await pool.query(`SELECT COUNT(*) FROM clients`);
         const activeLoans = await pool.query(`SELECT COUNT(*) FROM loans WHERE status = 'active'`);
         const totalDisbursed = await pool.query(`SELECT COALESCE(SUM(amount_borrowed), 0) as total FROM loans`);
         const totalRepaid = await pool.query(`SELECT COALESCE(SUM(amount_repaid), 0) as total FROM loans`);
@@ -327,17 +294,9 @@ app.get('/api/reports/dashboard', async (req, res) => {
     }
 });
 
-app.get('/api/reports/trend', async (req, res) => {
-    try {
-        const loanTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month, COALESCE(SUM(amount_borrowed), 0) as total FROM loans WHERE created_at >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', created_at) ORDER BY DATE_TRUNC('month', created_at) ASC`);
-        const paymentTrend = await pool.query(`SELECT TO_CHAR(DATE_TRUNC('month', payment_date), 'Mon YYYY') as month, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_date >= CURRENT_DATE - INTERVAL '6 months' GROUP BY DATE_TRUNC('month', payment_date) ORDER BY DATE_TRUNC('month', payment_date) ASC`);
-        res.json({ success: true, data: { loans: loanTrend.rows, payments: paymentTrend.rows } });
-    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
-});
-
-// Manual trigger for alerts
+// Manual alert trigger
 app.post('/api/send-alert', async (req, res) => {
-    const { loan_id, phone_number, email, subject, message } = req.body;
+    const { phone_number, email, subject, message } = req.body;
     try {
         await sendAlerts(phone_number, email, subject, message);
         res.json({ success: true, message: 'Alert sent successfully' });

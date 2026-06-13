@@ -2,166 +2,183 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Scholastica Finance - Mfumo wa Mikopo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #f0f2f5 0%, #e0e5ec 100%);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+            background: #f0f2f5;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
         
+        /* Header */
         .header { 
             background: linear-gradient(135deg, #0f2b4d, #1a4a7a); 
             color: white; 
-            padding: 18px 0; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 15px 0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         .header-content { 
-            max-width: 1400px; 
+            max-width: 1200px; 
             margin: 0 auto; 
-            padding: 0 20px; 
+            padding: 0 16px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             flex-wrap: wrap;
+            gap: 10px;
         }
-        .logo h1 { font-size: 24px; letter-spacing: 1px; }
-        .logo p { font-size: 12px; opacity: 0.8; margin-top: 5px; }
+        .logo h1 { font-size: clamp(18px, 5vw, 24px); letter-spacing: 0.5px; }
+        .logo p { font-size: clamp(10px, 3vw, 12px); opacity: 0.8; margin-top: 4px; }
         .logout-btn { 
             background: rgba(255,255,255,0.2); 
             border: none; 
             color: white; 
-            padding: 10px 25px; 
+            padding: 8px 20px; 
             border-radius: 30px; 
             cursor: pointer; 
             font-weight: 600; 
+            font-size: 14px;
             transition: all 0.3s; 
         }
-        .logout-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
         
-        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; }
         
         /* Login Page */
-        .login-wrapper { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+        .login-wrapper { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-card { 
             background: white; 
-            border-radius: 24px; 
-            padding: 40px; 
-            width: 450px; 
-            max-width: 90%; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 20px; 
+            padding: 30px; 
+            width: 100%;
+            max-width: 400px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .login-card h2 { text-align: center; margin-bottom: 10px; color: #0f2b4d; font-size: 28px; }
-        .login-card .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+        .login-card h2 { text-align: center; margin-bottom: 8px; color: #0f2b4d; font-size: clamp(22px, 6vw, 28px); }
+        .login-card .subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
+        .input-group { margin-bottom: 18px; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 14px; }
         .input-group input { 
             width: 100%; 
-            padding: 14px 16px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 12px; 
-            font-size: 15px; 
+            padding: 12px 14px; 
+            border: 1px solid #ddd; 
+            border-radius: 10px; 
+            font-size: 16px; 
             transition: all 0.3s; 
         }
-        .input-group input:focus { outline: none; border-color: #1a4a7a; box-shadow: 0 0 0 3px rgba(26,74,122,0.1); }
+        .input-group input:focus { outline: none; border-color: #1a4a7a; box-shadow: 0 0 0 2px rgba(26,74,122,0.1); }
         .btn { 
             background: linear-gradient(135deg, #1a4a7a, #0f2b4d); 
             color: white; 
-            padding: 14px; 
+            padding: 12px; 
             border: none; 
-            border-radius: 12px; 
+            border-radius: 10px; 
             font-size: 16px; 
             font-weight: 600; 
             cursor: pointer; 
             width: 100%; 
             transition: all 0.3s; 
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(26,74,122,0.3); }
-        .demo-text { text-align: center; margin-top: 20px; color: #888; font-size: 12px; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .demo-text { text-align: center; margin-top: 18px; color: #888; font-size: 12px; }
         
-        /* Stats Cards */
+        /* Stats Cards - Responsive */
         .stats-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 30px; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 12px; 
+            margin-bottom: 25px; 
         }
         .stat-card { 
             background: white; 
-            border-radius: 16px; 
-            padding: 15px 10px; 
+            border-radius: 14px; 
+            padding: 14px 10px; 
             text-align: center; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
-            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+            transition: transform 0.2s;
         }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-        .stat-card h3 { font-size: 12px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-number { font-size: 18px; font-weight: 800; color: #1a4a7a; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card h3 { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-number { font-size: 16px; font-weight: 800; color: #1a4a7a; word-break: break-word; }
         .stat-number.warning { color: #e74c3c; }
         .stat-number.success { color: #27ae60; }
         
-        /* Tabs */
+        /* Tabs - Responsive */
         .tabs-wrapper { 
             background: white; 
-            border-radius: 16px; 
+            border-radius: 14px; 
             padding: 8px; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             display: flex; 
             flex-wrap: wrap; 
-            gap: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            gap: 6px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
         }
         .tab { 
-            padding: 12px 20px; 
+            padding: 10px 16px; 
             background: transparent; 
             border: none; 
-            border-radius: 12px; 
+            border-radius: 10px; 
             cursor: pointer; 
             font-weight: 600; 
+            font-size: 13px;
             color: #666; 
             transition: all 0.3s; 
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
         }
         .tab:hover { background: #f0f0f0; color: #1a4a7a; }
         .tab.active { background: linear-gradient(135deg, #1a4a7a, #0f2b4d); color: white; }
         
-        .tab-content { display: none; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Tab Content */
+        .tab-content { display: none; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
+        /* Sort Bar */
         .sort-bar { 
             display: flex; 
             gap: 10px; 
             margin-bottom: 20px; 
-            padding-bottom: 15px; 
+            padding-bottom: 12px; 
             border-bottom: 1px solid #eee;
             flex-wrap: wrap;
             align-items: center;
         }
-        .sort-bar label { font-weight: 600; color: #555; }
+        .sort-bar label { font-weight: 600; color: #555; font-size: 13px; }
         .sort-select { 
-            padding: 8px 15px; 
+            padding: 8px 12px; 
             border: 1px solid #ddd; 
             border-radius: 8px; 
             background: white;
+            font-size: 13px;
             cursor: pointer;
         }
         
-        .data-table { width: 100%; border-collapse: collapse; overflow-x: auto; display: block; }
-        .data-table th, .data-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; }
-        .data-table th { background: #f8f9fa; font-weight: 700; color: #333; font-size: 13px; }
-        .data-table tr:hover { background: #f8f9fa; }
+        /* Tables - Responsive with horizontal scroll */
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .data-table th, .data-table td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        .data-table th { background: #f8f9fa; font-weight: 700; color: #333; font-size: 12px; }
+        .data-table tr:hover { background: #fafafa; }
         
+        /* Badges */
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .badge-active { background: #e8f5e9; color: #2e7d32; }
         .badge-overdue { background: #ffebee; color: #c62828; }
         .badge-completed { background: #e3f2fd; color: #1565c0; }
         .badge-warning { background: #fff3e0; color: #ef6c00; }
         
+        /* Buttons */
         .btn-sm { padding: 5px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; margin: 2px; transition: all 0.2s; }
         .btn-edit { background: #ff9800; color: white; }
         .btn-edit:hover { background: #f57c00; }
@@ -170,46 +187,61 @@
         .btn-alert { background: #2196f3; color: white; }
         .btn-alert:hover { background: #1976d2; }
         
-        .form-card { background: #fafafa; border-radius: 16px; padding: 25px; }
-        .form-row { margin-bottom: 20px; }
-        .form-row label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+        /* Forms */
+        .form-card { background: #fafafa; border-radius: 14px; padding: 20px; }
+        .form-row { margin-bottom: 18px; }
+        .form-row label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 13px; }
         .form-row input, .form-row select { 
             width: 100%; 
-            padding: 12px 15px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 12px; 
+            padding: 12px 14px; 
+            border: 1px solid #ddd; 
+            border-radius: 10px; 
             font-size: 14px; 
         }
         .form-row input:focus, .form-row select:focus { outline: none; border-color: #1a4a7a; }
         
-        .alert-message { padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; }
+        /* Messages */
+        .alert-message { padding: 12px 15px; border-radius: 10px; margin-bottom: 18px; font-size: 13px; }
         .alert-error { background: #ffebee; color: #c62828; border-left: 4px solid #c62828; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #2e7d32; }
         .alert-info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
         
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-        .modal-content { background: white; margin: 8% auto; padding: 30px; border-radius: 24px; width: 500px; max-width: 90%; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
+        .modal-content { background: white; margin: 15% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 450px; animation: slideIn 0.2s ease; }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { color: #0f2b4d; }
-        .close { font-size: 28px; cursor: pointer; color: #999; }
+        .modal-header h3 { color: #0f2b4d; font-size: 18px; }
+        .close { font-size: 26px; cursor: pointer; color: #999; }
         .close:hover { color: #333; }
         
-        .payment-history { background: #fafafa; border-radius: 16px; overflow: hidden; }
-        .payment-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; transition: all 0.2s; }
+        /* Payment History */
+        .payment-history { background: #fafafa; border-radius: 14px; overflow: hidden; }
+        .payment-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; gap: 10px; }
         .payment-item:hover { background: white; }
-        .payment-amount { font-size: 18px; font-weight: 700; color: #27ae60; }
+        .payment-amount { font-size: 16px; font-weight: 700; color: #27ae60; }
         .payment-date { font-size: 11px; color: #888; margin-top: 4px; }
         .payment-method { font-size: 11px; background: #eee; display: inline-block; padding: 3px 10px; border-radius: 20px; }
         
-        .section-title { font-size: 18px; font-weight: 700; color: #0f2b4d; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #1a4a7a; display: inline-block; }
+        .section-title { font-size: 16px; font-weight: 700; color: #0f2b4d; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 3px solid #1a4a7a; display: inline-block; }
         
+        /* Mobile optimizations */
         @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-number { font-size: 14px; }
-            .tab { padding: 8px 12px; font-size: 12px; }
-            .data-table { font-size: 11px; }
-            .data-table td, .data-table th { padding: 6px 4px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-number { font-size: 13px; }
+            .tab { padding: 8px 12px; font-size: 11px; min-width: 60px; }
+            .data-table th, .data-table td { padding: 8px 5px; font-size: 11px; }
+            .payment-item { flex-direction: column; text-align: center; }
+            .payment-details { text-align: center; }
+            .logo h1 { font-size: 18px; }
+            .header-content { flex-direction: column; text-align: center; }
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 0 12px; }
+            .tab-content { padding: 15px; }
+            .stat-card { padding: 10px 5px; }
+            .stat-number { font-size: 11px; }
         }
     </style>
 </head>
@@ -218,7 +250,7 @@
         <div class="header-content">
             <div class="logo">
                 <h1>🏦 SCHOLASTICA FINANCE</h1>
-                <p>Mfumo wa Usimamizi wa Mikopo - Watu wa Mtaani</p>
+                <p>Mfumo wa Usimamizi wa Mikopo</p>
             </div>
             <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">🚪 Toka</button>
         </div>
@@ -246,10 +278,8 @@
 
         <!-- Dashboard Section -->
         <div id="dashboardSection" style="display:none">
-            <!-- Stats Cards -->
             <div class="stats-grid" id="statsContainer"></div>
             
-            <!-- Tabs -->
             <div class="tabs-wrapper">
                 <button class="tab" onclick="showTab('clients')">👥 WATEJA</button>
                 <button class="tab" onclick="showTab('loans')">💰 MIKOPO INAYOENDELEA</button>
@@ -263,7 +293,7 @@
 
             <div id="clientsTab" class="tab-content">
                 <h3 class="section-title">📋 ORODHA YA WATEJA</h3>
-                <div id="clientsList"></div>
+                <div class="table-wrapper" id="clientsList"></div>
             </div>
 
             <div id="loansTab" class="tab-content">
@@ -272,25 +302,23 @@
                     <label>🔽 Panga kwa:</label>
                     <select id="loanSort" class="sort-select" onchange="loadLoans()">
                         <option value="created_desc">Tarehe (Mpya kwanza)</option>
-                        <option value="created_asc">Tarehe (Zamani kwanza)</option>
                         <option value="days_asc">Siku zilizobaki (Chini kwanza)</option>
-                        <option value="days_desc">Siku zilizobaki (Juu kwanza)</option>
                         <option value="amount_asc">Kiasi (Kidogo kwanza)</option>
                         <option value="amount_desc">Kiasi (Kikubwa kwanza)</option>
                         <option value="due_date_asc">Tarehe ya malipo (Karibu kwanza)</option>
                     </select>
                 </div>
-                <div id="loansList"></div>
+                <div class="table-wrapper" id="loansList"></div>
             </div>
 
             <div id="defaultersTab" class="tab-content">
                 <h3 class="section-title">⚠️ WADAIWA SUGU (WALIOSHINDWA KULIPA)</h3>
-                <div id="defaultersList"></div>
+                <div class="table-wrapper" id="defaultersList"></div>
             </div>
 
             <div id="upcomingTab" class="tab-content">
-                <h3 class="section-title">⏰ MIKOPO INAYOKARIBIA TAREPHE (SIKU 5)</h3>
-                <div id="upcomingList"></div>
+                <h3 class="section-title">⏰ MIKOPO INAYOKARIBIA KUISHA (SIKU 5)</h3>
+                <div class="table-wrapper" id="upcomingList"></div>
             </div>
 
             <div id="paymentsTab" class="tab-content">
@@ -352,13 +380,9 @@
     <script>
         const API_URL = window.location.origin;
         let token = localStorage.getItem('token');
-        let loansChart, paymentsChart;
 
         if (token) { 
             showDashboard(); 
-        } else {
-            document.getElementById('loginSection').style.display = 'flex';
-            document.getElementById('dashboardSection').style.display = 'none';
         }
 
         async function login() {
@@ -431,12 +455,12 @@
                 const data = await res.json();
                 if (data.success) {
                     document.getElementById('statsContainer').innerHTML = `
-                        <div class="stat-card"><h3>WATEJA</h3><div class="stat-number">${data.data.totalClients.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>MIKOPO INAYOENDELEA</h3><div class="stat-number">${data.data.activeLoans.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>JUMLA YA MIKOPO</h3><div class="stat-number">TZS ${data.data.totalDisbursed.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>MALIPO</h3><div class="stat-number success">TZS ${data.data.totalRepaid.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>WADAIWA SUGU</h3><div class="stat-number warning">${data.data.defaulters.toLocaleString()}</div></div>
-                        <div class="stat-card"><h3>RIBA</h3><div class="stat-number success">TZS ${data.data.totalInterest.toLocaleString()}</div></div>
+                        <div class="stat-card"><h3>WATEJA</h3><div class="stat-number">${data.data.totalClients}</div></div>
+                        <div class="stat-card"><h3>MIKOPO INAYOENDELEA</h3><div class="stat-number">${data.data.activeLoans}</div></div>
+                        <div class="stat-card"><h3>JUMLA YA MIKOPO</h3><div class="stat-number">TZS ${Number(data.data.totalDisbursed).toLocaleString()}</div></div>
+                        <div class="stat-card"><h3>MALIPO</h3><div class="stat-number success">TZS ${Number(data.data.totalRepaid).toLocaleString()}</div></div>
+                        <div class="stat-card"><h3>WADAIWA SUGU</h3><div class="stat-number warning">${data.data.defaulters}</div></div>
+                        <div class="stat-card"><h3>RIBA</h3><div class="stat-number success">TZS ${Number(data.data.totalInterest).toLocaleString()}</div></div>
                     `;
                 }
             } catch (err) { console.error(err); }
@@ -459,12 +483,12 @@
                             <td><button class="btn-sm btn-edit" onclick="openEditModal(${c.id})">✏️</button> <button class="btn-sm btn-delete" onclick="deleteClient(${c.id})">🗑️</button></td>
                         </tr>`;
                     });
-                    html += `</tbody></table>`;
+                    html += `</tbody>}</table>`;
                     document.getElementById('clientsList').innerHTML = html;
                 } else {
-                    document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja</div>';
+                    document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja waliosajiliwa</div>';
                 }
-            } catch (err) { document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
+            } catch (err) { document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
 
         async function loadLoans() {
@@ -487,12 +511,12 @@
                             <td><span class="badge ${l.status === 'active' ? (l.days_remaining < 0 ? 'badge-overdue' : 'badge-active') : 'badge-completed'}">${l.status === 'active' ? (l.days_remaining < 0 ? 'Imechelewa' : 'Inayoendelea') : 'Imelipwa'}</span></td>
                         </tr>`;
                     });
-                    html += `</tbody></table>`;
+                    html += `</tbody>}</table>`;
                     document.getElementById('loansList').innerHTML = html;
                 } else {
-                    document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo</div>';
+                    document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo iliyotolewa</div>';
                 }
-            } catch (err) { document.getElementById('loansList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
+            } catch (err) { document.getElementById('loansList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
 
         async function loadDefaulters() {
@@ -500,25 +524,24 @@
                 const res = await fetch(`${API_URL}/api/loans/defaulters`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>BARUA PEPE</th><th>KIASI</th><th>SALIO</th><th>IMECHELEWA</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>IMECHELEWA</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${l.client_full_name}</strong></td>
                             <td>${l.client_phone}</td>
-                            <td>${l.email || '-'}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge badge-overdue">${l.days_overdue} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert(${l.id}, '${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert('${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
                         </tr>`;
                     });
-                    html += `</tbody></table>`;
+                    html += `</tbody>}</table>`;
                     document.getElementById('defaultersList').innerHTML = html;
                 } else {
                     document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu! Wateja wote wanalipa kwa wakati.</div>';
                 }
-            } catch (err) { document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
+            } catch (err) { document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
 
         async function loadUpcoming() {
@@ -526,25 +549,24 @@
                 const res = await fetch(`${API_URL}/api/loans/upcoming`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>BARUA PEPE</th><th>KIASI</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
                             <td><strong>${l.client_full_name}</strong></td>
                             <td>${l.client_phone}</td>
-                            <td>${l.email || '-'}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
                             <td><span class="badge badge-warning">${l.days_remaining} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert(${l.id}, '${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert('${l.client_phone}', '${l.email || 'scholamalaba63@gmail.com'}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
                         </tr>`;
                     });
-                    html += `</tbody></table>`;
+                    html += `</tbody>}</table>`;
                     document.getElementById('upcomingList').innerHTML = html;
                 } else {
-                    document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo inayokaribia tarehe</div>';
+                    document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo inayokaribia tarehe ya malipo</div>';
                 }
-            } catch (err) { document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
+            } catch (err) { document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
 
         async function loadPayments() {
@@ -554,26 +576,24 @@
                 if (data.success && data.data.length > 0) {
                     let html = `<div class="payment-history">`;
                     data.data.forEach(p => {
-                        html += `
-                            <div class="payment-item">
-                                <div class="payment-info">
-                                    <div><strong>${p.client_name}</strong> - Mkopo TZS ${Number(p.amount_borrowed).toLocaleString()}</div>
-                                    <div class="payment-date">📅 ${new Date(p.payment_date).toLocaleDateString('sw-TZ')}</div>
-                                    <div class="payment-method">💰 ${p.payment_method === 'cash' ? 'Pesa Taslimu' : (p.payment_method === 'bank' ? 'Benki' : 'M-Pesa')}</div>
-                                </div>
-                                <div class="payment-details">
-                                    <div class="payment-amount">TZS ${Number(p.amount).toLocaleString()}</div>
-                                    <div style="font-size: 11px; color:#888;">Kiti: ${p.receipt_number || '-'}</div>
-                                </div>
+                        html += `<div class="payment-item">
+                            <div class="payment-info">
+                                <div><strong>${p.client_name}</strong> - Mkopo TZS ${Number(p.amount_borrowed).toLocaleString()}</div>
+                                <div class="payment-date">📅 ${new Date(p.payment_date).toLocaleDateString('sw-TZ')}</div>
+                                <div class="payment-method">💰 ${p.payment_method === 'cash' ? 'Pesa Taslimu' : (p.payment_method === 'bank' ? 'Benki' : 'M-Pesa')}</div>
                             </div>
-                        `;
+                            <div class="payment-details">
+                                <div class="payment-amount">TZS ${Number(p.amount).toLocaleString()}</div>
+                                <div style="font-size: 11px; color:#888;">Kiti: ${p.receipt_number || '-'}</div>
+                            </div>
+                        </div>`;
                     });
                     html += `</div>`;
                     document.getElementById('paymentsList').innerHTML = html;
                 } else {
                     document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-info">Hakuna malipo yaliyorekodiwa</div>';
                 }
-            } catch (err) { document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
+            } catch (err) { document.getElementById('paymentsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
         }
 
         async function loadClientsForSelect() {
@@ -619,7 +639,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mteja ameongezwa!</div>';
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mteja ameongezwa kikamilifu!</div>';
                     document.getElementById('clientName').value = ''; document.getElementById('clientPhone').value = ''; document.getElementById('clientEmail').value = ''; document.getElementById('clientAddress').value = '';
                     loadClients(); loadClientsForSelect(); loadDashboard();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
@@ -646,7 +666,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mkopo umetolewa!</div>';
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Mkopo umetolewa kikamilifu!</div>';
                     document.getElementById('loanAmount').value = ''; document.getElementById('loanInterest').value = '5'; document.getElementById('loanDuration').value = '6';
                     loadLoans(); loadLoansForPayment(); loadDashboard(); loadDefaulters(); loadUpcoming();
                     setTimeout(() => msgDiv.innerHTML = '', 3000);
@@ -676,21 +696,19 @@
             } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
         }
 
-        function sendManualAlert(loanId, phone, email, name, balance, days) {
-            const subject = `TAHADHARI YA MKOPO - ${name}`;
-            const message = `TAHADHARI: Mteja ${name} amechelewa kulipa mkopo kwa siku ${days}. Salio lililosalia ni TZS ${Number(balance).toLocaleString()}. Tafadhali wasiliana naye. - Scholastica Finance`;
-            if(confirm(`Tuma alert kwa ${phone} na ${email}?\nUjumbe: ${message.substring(0, 100)}...`)) {
+        function sendManualAlert(phone, email, name, balance, days) {
+            const message = `TAHADHARI: Mteja ${name} amechelewa kulipa mkopo kwa siku ${days}. Salio: TZS ${Number(balance).toLocaleString()}. Tafadhali wasiliana naye. - Scholastica Finance`;
+            if(confirm(`Tuma alert kwa ${phone} na ${email}?`)) {
                 alert(`✅ Alert imetumwa kwa ${phone} na ${email}\nNakala kwa 0762004163 na scholamalaba63@gmail.com`);
-                console.log(`SMS/Email sent to: ${phone}, ${email} and admin: 0762004163, scholamalaba63@gmail.com`);
+                console.log(`SMS/Email sent to: ${phone}, ${email}`);
             }
         }
 
-        function sendUpcomingAlert(loanId, phone, email, name, amount, days) {
-            const subject = `KUMBUKUMBU LA MKOPO - Siku ${days} Zimesalia`;
-            const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(amount).toLocaleString()} unatarajiwa kulipa baada ya siku ${days}. Tafadhali lipa kabla ya muda. - Scholastica Finance`;
-            if(confirm(`Tuma kumbukumbu kwa ${phone} na ${email}?\nUjumbe: ${message}`)) {
+        function sendUpcomingAlert(phone, email, name, amount, days) {
+            const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(amount).toLocaleString()} unatarajiwa kulipa baada ya siku ${days}. Lipa kabla ya muda. - Scholastica Finance`;
+            if(confirm(`Tuma kumbukumbu kwa ${phone} na ${email}?`)) {
                 alert(`✅ Kumbukumbu imetumwa kwa ${phone} na ${email}\nNakala kwa 0762004163 na scholamalaba63@gmail.com`);
-                console.log(`SMS/Email sent to: ${phone}, ${email} and admin: 0762004163, scholamalaba63@gmail.com`);
+                console.log(`SMS/Email sent to: ${phone}, ${email}`);
             }
         }
 
@@ -730,7 +748,7 @@
                     closeModal();
                     loadClients();
                     loadDashboard();
-                    alert('Taarifa zimehaririwa!');
+                    alert('Taarifa zimehaririwa kikamilifu!');
                 } else { alert('Tatizo: ' + data.message); }
             } catch (err) { alert('Tatizo la seva'); }
         }
