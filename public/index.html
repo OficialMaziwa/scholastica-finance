@@ -15,7 +15,6 @@
         .logout-btn:hover, .change-pwd-btn:hover { background: rgba(255,255,255,0.3); }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; }
         
-        /* Login Page */
         .login-wrapper { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-card { background: white; border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .login-card h2 { text-align: center; margin-bottom: 8px; color: #0f2b4d; }
@@ -29,7 +28,6 @@
         .link-btn { background: none; color: #1a4a7a; text-decoration: underline; margin-top: 15px; }
         .link-btn:hover { background: none; opacity: 0.8; }
         
-        /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .stat-card { background: white; border-radius: 14px; padding: 14px 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .stat-card h3 { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; }
@@ -37,7 +35,6 @@
         .stat-number.warning { color: #e74c3c; }
         .stat-number.success { color: #27ae60; }
         
-        /* Tabs */
         .tabs-wrapper { background: white; border-radius: 14px; padding: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
         .tab { padding: 10px 16px; background: transparent; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; color: #666; flex: 1; min-width: 80px; text-align: center; }
         .tab:hover { background: #f0f0f0; color: #1a4a7a; }
@@ -52,7 +49,7 @@
         .sort-select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; background: white; font-size: 13px; cursor: pointer; }
         
         .table-wrapper { overflow-x: auto; }
-        .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 700px; }
         .data-table th, .data-table td { padding: 12px 8px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
         .data-table th { background: #f8f9fa; font-weight: 700; }
         .data-table tr:hover { background: #fafafa; }
@@ -67,7 +64,6 @@
         .btn-edit { background: #ff9800; color: white; }
         .btn-delete { background: #f44336; color: white; }
         .btn-alert { background: #2196f3; color: white; }
-        .btn-alert:hover { background: #1976d2; }
         
         .form-card { background: #fafafa; border-radius: 14px; padding: 20px; }
         .form-row { margin-bottom: 18px; }
@@ -93,7 +89,6 @@
         .payment-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; gap: 10px; }
         .payment-item:hover { background: white; }
         .payment-amount { font-size: 16px; font-weight: 700; color: #27ae60; }
-        .payment-date { font-size: 11px; color: #888; margin-top: 4px; }
         .payment-method { font-size: 11px; background: #eee; display: inline-block; padding: 3px 10px; border-radius: 20px; }
         
         .section-title { font-size: 16px; font-weight: 700; color: #0f2b4d; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 3px solid #1a4a7a; display: inline-block; }
@@ -123,7 +118,6 @@
     </div>
 
     <div class="container">
-        <!-- Login Section -->
         <div id="loginSection" class="login-wrapper">
             <div class="login-card">
                 <h2>🔐 KARIBU!</h2>
@@ -142,7 +136,6 @@
             </div>
         </div>
 
-        <!-- Dashboard Section -->
         <div id="dashboardSection" style="display:none">
             <div class="stats-grid" id="statsContainer"></div>
             
@@ -196,9 +189,9 @@
                 <h3 class="section-title">➕ MTEJA MPYA</h3>
                 <div id="addClientMsg"></div>
                 <div class="form-card">
-                    <div class="form-row"><label>Jina kamili *</label><input type="text" id="clientName"></div>
-                    <div class="form-row"><label>Namba ya simu *</label><input type="text" id="clientPhone"></div>
-                    <div class="form-row"><label>Anuani</label><input type="text" id="clientAddress"></div>
+                    <div class="form-row"><label>Jina kamili *</label><input type="text" id="clientName" placeholder="Mfano: John Mwema"></div>
+                    <div class="form-row"><label>Namba ya simu *</label><input type="text" id="clientPhone" placeholder="0712345678"></div>
+                    <div class="form-row"><label>Anuani</label><input type="text" id="clientAddress" placeholder="Dar es Salaam"></div>
                     <button class="btn" onclick="addClient()">💾 HIFADHI MTEJA</button>
                 </div>
             </div>
@@ -208,9 +201,21 @@
                 <div id="addLoanMsg"></div>
                 <div class="form-card">
                     <div class="form-row"><label>Mteja *</label><select id="loanClientId"></select></div>
-                    <div class="form-row"><label>Kiasi (TZS) *</label><input type="number" id="loanAmount"></div>
-                    <div class="form-row"><label>Riba (%) *</label><input type="number" id="loanInterest" value="5"></div>
-                    <div class="form-row"><label>Muda (miezi) *</label><input type="number" id="loanDuration" value="6"></div>
+                    <div class="form-row"><label>Tarehe ya kuchukua mkopo *</label><input type="date" id="loanStartDate"></div>
+                    <div class="form-row"><label>Kiasi (TZS) *</label><input type="number" id="loanAmount" placeholder="500,000"></div>
+                    <div class="form-row"><label>Riba (%) kwa mwezi *</label><input type="number" id="loanInterest" value="5"></div>
+                    <div class="form-row"><label>Muda wa mkopo (miezi) *</label>
+                        <select id="loanDuration">
+                            <option value="1">Mwezi 1</option>
+                            <option value="2">Miezi 2</option>
+                            <option value="3">Miezi 3</option>
+                            <option value="4">Miezi 4</option>
+                            <option value="5">Miezi 5</option>
+                            <option value="6">Miezi 6</option>
+                            <option value="9">Miezi 9</option>
+                            <option value="12">Miezi 12</option>
+                        </select>
+                    </div>
                     <button class="btn" onclick="addLoan()">💰 TOA MKOPO</button>
                 </div>
             </div>
@@ -221,18 +226,20 @@
                 <div class="form-card">
                     <div class="form-row"><label>Chagua mkopo *</label><select id="paymentLoanId"></select></div>
                     <div class="form-row"><label>Kiasi cha kulipa (TZS) *</label><input type="number" id="paymentAmount"></div>
-                    <div class="form-row"><label>Njia ya malipo</label><select id="paymentMethod">
-                        <option value="cash">💵 Pesa Taslimu</option>
-                        <option value="bank">🏦 Benki</option>
-                        <option value="mobile">📱 M-Pesa / Tigo Pesa</option>
-                    </select></div>
+                    <div class="form-row"><label>Njia ya malipo</label>
+                        <select id="paymentMethod">
+                            <option value="cash">💵 Pesa Taslimu</option>
+                            <option value="bank">🏦 Benki</option>
+                            <option value="mobile">📱 M-Pesa / Tigo Pesa</option>
+                        </select>
+                    </div>
                     <button class="btn" onclick="makePayment()">💵 REKODI MALIPO</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Forgot Password Modal (SMS Only) -->
+    <!-- Modals -->
     <div id="forgotPasswordModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>🔑 Umesahau Neno la Siri</h3><span class="close" onclick="closeForgotPasswordModal()">&times;</span></div>
@@ -242,7 +249,6 @@
         </div>
     </div>
 
-    <!-- Change Password Modal -->
     <div id="changePasswordModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>🔑 Badilisha Neno la Siri</h3><span class="close" onclick="closeChangePasswordModal()">&times;</span></div>
@@ -250,24 +256,22 @@
             <div class="form-row"><label>Neno la siri la sasa</label><input type="password" id="currentPassword"></div>
             <div class="form-row"><label>Neno la siri jipya</label><input type="password" id="newPassword"></div>
             <div class="form-row"><label>Rudia neno la siri jipya</label><input type="password" id="confirmNewPassword"></div>
-            <button class="btn" onclick="changePassword()">💾 Badilisha Neno la Siri</button>
+            <button class="btn" onclick="changePassword()">💾 Badilisha</button>
         </div>
     </div>
 
-    <!-- Duplicate Client Modal -->
     <div id="duplicateModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>⚠️ Mteja Tayari Yupo</h3><span class="close" onclick="closeDuplicateModal()">&times;</span></div>
             <div id="duplicateMsg"></div>
             <div class="form-row"><label>Jina</label><input type="text" id="dupFullName" readonly></div>
-            <div class="form-row"><label>Namba ya simu</label><input type="text" id="dupPhone" readonly></div>
+            <div class="form-row"><label>Simu</label><input type="text" id="dupPhone" readonly></div>
             <div class="form-row"><label>Anuani</label><input type="text" id="dupAddress" readonly></div>
             <button class="btn" onclick="addLoanForExistingClient()">💰 Mwongeze Deni (Toa Mkopo)</button>
             <button class="btn" onclick="closeDuplicateModal()" style="margin-top:10px; background:#666">❌ Funga</button>
         </div>
     </div>
 
-    <!-- Edit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>✏️ HARIRI TAARIFA</h3><span class="close" onclick="closeModal()">&times;</span></div>
@@ -333,11 +337,7 @@
             document.getElementById('forgotPhone').value = '';
             document.getElementById('forgotPwdMsg').innerHTML = '';
         }
-
-        function closeForgotPasswordModal() {
-            document.getElementById('forgotPasswordModal').style.display = 'none';
-        }
-
+        function closeForgotPasswordModal() { document.getElementById('forgotPasswordModal').style.display = 'none'; }
         function openChangePasswordModal() {
             document.getElementById('changePasswordModal').style.display = 'block';
             document.getElementById('currentPassword').value = '';
@@ -345,24 +345,14 @@
             document.getElementById('confirmNewPassword').value = '';
             document.getElementById('changePwdMsg').innerHTML = '';
         }
-
-        function closeChangePasswordModal() {
-            document.getElementById('changePasswordModal').style.display = 'none';
-        }
-
-        function closeDuplicateModal() {
-            document.getElementById('duplicateModal').style.display = 'none';
-            pendingDuplicateClient = null;
-        }
+        function closeChangePasswordModal() { document.getElementById('changePasswordModal').style.display = 'none'; }
+        function closeDuplicateModal() { document.getElementById('duplicateModal').style.display = 'none'; pendingDuplicateClient = null; }
 
         async function forgotPassword() {
             const phone = document.getElementById('forgotPhone').value;
             const msgDiv = document.getElementById('forgotPwdMsg');
-            if (!phone) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali weka namba yako ya simu</div>';
-                return;
-            }
-            msgDiv.innerHTML = '<div class="alert-message alert-info">Inatuma ombi lako...</div>';
+            if (!phone) { msgDiv.innerHTML = '<div class="alert-message alert-error">Weka namba ya simu</div>'; return; }
+            msgDiv.innerHTML = '<div class="alert-message alert-info">Inatuma...</div>';
             try {
                 const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
                     method: 'POST',
@@ -377,45 +367,32 @@
                     msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
                 }
             } catch (err) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva. Jaribu tena.</div>';
+                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>';
             }
         }
 
         async function changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            const current = document.getElementById('currentPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmNewPassword').value;
             const msgDiv = document.getElementById('changePwdMsg');
-            
-            if (!currentPassword || !newPassword) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tafadhali jaza neno la siri la sasa na jipya</div>';
-                return;
-            }
-            if (newPassword !== confirmPassword) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Neno la siri jipya na kurudia havilingani</div>';
-                return;
-            }
-            if (newPassword.length < 6) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Neno la siri jipya lazima iwe na herufi 6 au zaidi</div>';
-                return;
-            }
-            
+            if (!current || !newPwd) { msgDiv.innerHTML = '<div class="alert-message alert-error">Jaza neno la siri</div>'; return; }
+            if (newPwd !== confirm) { msgDiv.innerHTML = '<div class="alert-message alert-error">Neno jipya havilingani</div>'; return; }
+            if (newPwd.length < 6) { msgDiv.innerHTML = '<div class="alert-message alert-error">Neno jipya lazima herufi 6+</div>'; return; }
             try {
                 const res = await fetch(`${API_URL}/api/auth/change-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+                    body: JSON.stringify({ current_password: current, new_password: newPwd })
                 });
                 const data = await res.json();
                 if (data.success) {
-                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Neno la siri limebadilishwa kikamilifu!</div>';
+                    msgDiv.innerHTML = '<div class="alert-message alert-success">✅ Neno limebadilishwa!</div>';
                     setTimeout(() => closeChangePasswordModal(), 2000);
                 } else {
                     msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
                 }
-            } catch (err) {
-                msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>';
-            }
+            } catch (err) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tatizo la seva</div>'; }
         }
 
         async function showDashboard() {
@@ -432,6 +409,8 @@
             await loadClientsForSelect();
             await loadLoansForPayment();
             showTab('clients');
+            // Set default start date to today
+            document.getElementById('loanStartDate').value = new Date().toISOString().split('T')[0];
         }
 
         function showTab(tabName) {
@@ -442,6 +421,9 @@
             if (tabName === 'loans') loadLoans();
             if (tabName === 'upcoming') loadUpcoming();
             if (tabName === 'defaulters') loadDefaulters();
+            if (tabName === 'addLoan') {
+                document.getElementById('loanStartDate').value = new Date().toISOString().split('T')[0];
+            }
         }
 
         async function loadDashboard() {
@@ -480,9 +462,9 @@
                     html += `</tbody></table>`;
                     document.getElementById('clientsList').innerHTML = html;
                 } else {
-                    document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja waliosajiliwa</div>';
+                    document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-info">Hakuna wateja</div>';
                 }
-            } catch (err) { document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
+            } catch (err) { document.getElementById('clientsList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
 
         async function loadLoans() {
@@ -491,7 +473,7 @@
                 const res = await fetch(`${API_URL}/api/loans/all?sort=${sort}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>KIASI</th><th>RIBA</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>HALI</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>KIASI</th><th>RIBA</th><th>SALIO</th><th>TAREHE YA KUCHUKUA</th><th>TAREHE YA KULIPA</th><th>SIKU ZIMESALIA</th><th>HALI</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         let daysClass = l.days_remaining < 0 ? 'badge-overdue' : (l.days_remaining <= 3 ? 'badge-warning' : 'badge-active');
                         let daysText = l.days_remaining > 0 ? `${l.days_remaining} siku` : (l.days_remaining === 0 ? 'Leo!' : `Imechelewa ${-l.days_remaining} siku`);
@@ -501,6 +483,8 @@
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>${l.interest_rate}%</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
+                            <td>${l.start_date_formatted || new Date(l.start_date).toLocaleDateString()}</td>
+                            <td>${l.due_date_formatted || new Date(l.due_date).toLocaleDateString()}</td>
                             <td><span class="badge ${daysClass}">${daysText}</span></td>
                             <td><span class="badge ${l.status === 'active' ? (l.days_remaining < 0 ? 'badge-overdue' : 'badge-active') : 'badge-completed'}">${l.status === 'active' ? (l.days_remaining < 0 ? 'Imechelewa' : 'Inayoendelea') : 'Imelipwa'}</span></td>
                         </tr>`;
@@ -510,7 +494,7 @@
                 } else {
                     document.getElementById('loansList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo</div>';
                 }
-            } catch (err) { document.getElementById('loansList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
+            } catch (err) { document.getElementById('loansList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
 
         async function loadDefaulters() {
@@ -518,7 +502,7 @@
                 const res = await fetch(`${API_URL}/api/loans/defaulters`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>IMECHELEWA</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>TAREHE YA KUCHUKUA</th><th>TAREHE YA KULIPA</th><th>IMECHELEWA</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
@@ -526,16 +510,18 @@
                             <td>${l.phone_number}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
+                            <td>${l.start_date_formatted || new Date(l.start_date).toLocaleDateString()}</td>
+                            <td>${l.due_date_formatted || new Date(l.due_date).toLocaleDateString()}</td>
                             <td><span class="badge badge-overdue">${l.days_overdue} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert('${l.phone_number}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Tuma Alert</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendManualAlert('${l.phone_number}', '${l.client_full_name}', ${l.remaining_balance}, ${l.days_overdue})">📱 Alert</button></td>
                         </tr>`;
                     });
                     html += `</tbody></table>`;
                     document.getElementById('defaultersList').innerHTML = html;
                 } else {
-                    document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa sugu!</div>';
+                    document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-success">🎉 Hakuna wadaiwa!</div>';
                 }
-            } catch (err) { document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
+            } catch (err) { document.getElementById('defaultersList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
 
         async function loadUpcoming() {
@@ -543,7 +529,7 @@
                 const res = await fetch(`${API_URL}/api/loans/upcoming`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
                 if (data.success && data.data.length > 0) {
-                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>SIKU ZIMESALIA</th><th>VITENDO</th></tr></thead><tbody>`;
+                    let html = `<table class="data-table"><thead><tr><th>#</th><th>MTEJA</th><th>SIMU</th><th>KIASI</th><th>SALIO</th><th>TAREHE YA KUCHUKUA</th><th>TAREHE YA KULIPA</th><th>SIKU ZIMESALIA</th><th>VITENDO</th></tr></thead><tbody>`;
                     data.data.forEach((l, idx) => {
                         html += `<tr>
                             <td>${idx+1}</td>
@@ -551,8 +537,10 @@
                             <td>${l.phone_number}</td>
                             <td>TZS ${Number(l.amount_borrowed).toLocaleString()}</td>
                             <td>TZS ${Number(l.remaining_balance).toLocaleString()}</td>
+                            <td>${l.start_date_formatted || new Date(l.start_date).toLocaleDateString()}</td>
+                            <td>${l.due_date_formatted || new Date(l.due_date).toLocaleDateString()}</td>
                             <td><span class="badge badge-warning">${l.days_remaining} siku</span></td>
-                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert('${l.phone_number}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Tuma Kumbukumbu</button></td>
+                            <td><button class="btn-sm btn-alert" onclick="sendUpcomingAlert('${l.phone_number}', '${l.client_full_name}', ${l.amount_borrowed}, ${l.days_remaining})">📱 Kumbukumbu</button></td>
                         </tr>`;
                     });
                     html += `</tbody></table>`;
@@ -560,7 +548,7 @@
                 } else {
                     document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-info">Hakuna mikopo inayokaribia</div>';
                 }
-            } catch (err) { document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia data</div>'; }
+            } catch (err) { document.getElementById('upcomingList').innerHTML = '<div class="alert-message alert-error">Tatizo la kupakia</div>'; }
         }
 
         async function loadPayments() {
@@ -570,12 +558,11 @@
                 if (data.success && data.data.length > 0) {
                     let html = `<div class="payment-history">`;
                     data.data.forEach(p => {
-                        let methodDisplay = p.payment_method_display || p.payment_method;
                         html += `<div class="payment-item">
                             <div><strong>${p.client_name}</strong></div>
                             <div>💰 TZS ${Number(p.amount).toLocaleString()}</div>
                             <div>📅 ${new Date(p.payment_date).toLocaleDateString()}</div>
-                            <div><span class="payment-method">${methodDisplay}</span></div>
+                            <div><span class="payment-method">${p.payment_method_display}</span></div>
                         </div>`;
                     });
                     html += `</div>`;
@@ -619,13 +606,12 @@
             const phone = document.getElementById('clientPhone').value;
             const address = document.getElementById('clientAddress').value;
             const msgDiv = document.getElementById('addClientMsg');
-            if (!name || !phone) { msgDiv.innerHTML = '<div class="alert-message alert-error">Jina na namba ya simu vinahitajika</div>'; return; }
-            
+            if (!name || !phone) { msgDiv.innerHTML = '<div class="alert-message alert-error">Jina na simu vinahitajika</div>'; return; }
             try {
                 const res = await fetch(`${API_URL}/api/clients`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ full_name: name, phone_number: phone, email: '', address })
+                    body: JSON.stringify({ full_name: name, phone_number: phone, address })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -641,7 +627,6 @@
                     document.getElementById('dupPhone').value = data.client.phone_number;
                     document.getElementById('dupAddress').value = data.client.address || '-';
                     document.getElementById('duplicateModal').style.display = 'block';
-                    msgDiv.innerHTML = '';
                 } else {
                     msgDiv.innerHTML = `<div class="alert-message alert-error">${data.message}</div>`;
                 }
@@ -653,10 +638,8 @@
                 document.getElementById('loanClientId').value = pendingDuplicateClient.id;
                 showTab('addLoan');
                 closeDuplicateModal();
-                document.getElementById('addLoanMsg').innerHTML = '<div class="alert-message alert-success">✅ Tafadhali jaza taarifa za mkopo kwa mteja huyu</div>';
-                setTimeout(() => {
-                    document.getElementById('addLoanMsg').innerHTML = '';
-                }, 3000);
+                document.getElementById('addLoanMsg').innerHTML = '<div class="alert-message alert-success">✅ Tafadhali jaza taarifa za mkopo</div>';
+                setTimeout(() => { document.getElementById('addLoanMsg').innerHTML = ''; }, 3000);
             }
         }
 
@@ -665,8 +648,10 @@
             const amount = document.getElementById('loanAmount').value;
             const interest = document.getElementById('loanInterest').value;
             const duration = document.getElementById('loanDuration').value;
+            const startDate = document.getElementById('loanStartDate').value;
             const msgDiv = document.getElementById('addLoanMsg');
-            if (!clientId || !amount || !interest) { msgDiv.innerHTML = '<div class="alert-message alert-error">Chagua mteja na jaza taarifa zote</div>'; return; }
+            if (!clientId || !amount || !interest) { msgDiv.innerHTML = '<div class="alert-message alert-error">Chagua mteja na jaza taarifa</div>'; return; }
+            if (!startDate) { msgDiv.innerHTML = '<div class="alert-message alert-error">Tarehe ya kuchukua mkopo inahitajika</div>'; return; }
             const selectedOption = document.getElementById('loanClientId').options[document.getElementById('loanClientId').selectedIndex];
             const clientName = selectedOption.getAttribute('data-name');
             const clientPhone = selectedOption.getAttribute('data-phone');
@@ -674,7 +659,7 @@
                 const res = await fetch(`${API_URL}/api/loans`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ client_id: parseInt(clientId), client_name: clientName, phone_number: clientPhone, amount_borrowed: parseFloat(amount), interest_rate: parseFloat(interest), duration_months: parseInt(duration) })
+                    body: JSON.stringify({ client_id: parseInt(clientId), client_name: clientName, phone_number: clientPhone, amount_borrowed: parseFloat(amount), interest_rate: parseFloat(interest), duration_months: parseInt(duration), start_date: startDate })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -732,7 +717,7 @@
                     document.getElementById('editStatus').value = data.data.status || 'active';
                     document.getElementById('editModal').style.display = 'block';
                 }
-            } catch (err) { alert('Tatizo la kupakia taarifa'); }
+            } catch (err) { alert('Tatizo la kupakia'); }
         }
 
         function closeModal() { document.getElementById('editModal').style.display = 'none'; }
@@ -740,14 +725,14 @@
         async function saveClientEdit() {
             const id = document.getElementById('editClientId').value;
             const full_name = document.getElementById('editFullName').value;
-            const phone_number = document.getElementById('editPhone').value;
+            const phone = document.getElementById('editPhone').value;
             const address = document.getElementById('editAddress').value;
             const status = document.getElementById('editStatus').value;
             try {
                 const res = await fetch(`${API_URL}/api/clients/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ full_name, phone_number, email: '', address, status })
+                    body: JSON.stringify({ full_name, phone_number: phone, address, status })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -760,7 +745,7 @@
         }
 
         async function deleteClient(id) {
-            if (confirm('Una uhakika unataka kumfuta mteja huyu kabisa?')) {
+            if (confirm('Una uhakika unataka kumfuta mteja huyu?')) {
                 try {
                     const res = await fetch(`${API_URL}/api/clients/${id}`, {
                         method: 'DELETE',
@@ -770,7 +755,7 @@
                     if (data.success) {
                         loadClients();
                         loadDashboard();
-                        alert('Mteja amefutwa kabisa!');
+                        alert('Mteja amefutwa!');
                     } else { alert(data.message); }
                 } catch (err) { alert('Tatizo la seva'); }
             }

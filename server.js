@@ -46,22 +46,19 @@ function generateRandomPassword() {
     return password;
 }
 
-// Send SMS Only (No Email)
+// Send SMS Only
 async function sendSMS(phoneNumber, message) {
     const adminPhone = '0686527605';
     console.log(`📱 SMS to: ${phoneNumber}`);
     console.log(`📱 SMS to admin: ${adminPhone}`);
     console.log(`📝 Message: ${message}`);
-    console.log(`✅ SMS sent successfully (simulated)`);
     return true;
 }
 
-// Send alert for loans (SMS only)
 async function sendAlert(phoneNumber, message) {
     const adminPhone = '0686527605';
     console.log(`📱 ALERT SMS to: ${phoneNumber}`);
     console.log(`📱 ALERT SMS to admin: ${adminPhone}`);
-    console.log(`📝 Message: ${message}`);
     return true;
 }
 
@@ -79,7 +76,6 @@ async function checkAndSendAlerts() {
         for (const loan of result.rows) {
             const daysRemaining = Math.ceil((new Date(loan.due_date) - new Date()) / (1000 * 60 * 60 * 24));
             const message = `KUMBUKUMBU: Mkopo wako wa TZS ${Number(loan.amount_borrowed).toLocaleString()} unatarajiwa kulipa tarehe ${new Date(loan.due_date).toLocaleDateString()}. Siku ${daysRemaining} zimesalia. Tafadhali lipa kabla ya muda. Asante! - Scholastica Finance`;
-            
             await sendAlert(loan.phone_number, message);
         }
     } catch (error) {
@@ -130,106 +126,63 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// Forgot Password - Send new password via SMS only
 app.post('/api/auth/forgot-password', async (req, res) => {
     const { phone } = req.body;
-    
-    if (!phone) {
-        return res.status(400).json({ success: false, message: 'Namba ya simu inahitajika' });
-    }
-    
+    if (!phone) return res.status(400).json({ success: false, message: 'Namba ya simu inahitajika' });
     try {
         const formattedPhone = formatPhoneNumber(phone);
         const result = await pool.query(`SELECT id, username, full_name, phone FROM users WHERE phone = $1 OR username = $1`, [formattedPhone, phone]);
-        
-        if (result.rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'Namba hii haijasajiliwa kwenye mfumo' });
-        }
-        
+        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Namba hii haijasajiliwa' });
         const user = result.rows[0];
         const newPassword = generateRandomPassword();
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(newPassword, salt);
-        
         await pool.query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [password_hash, user.id]);
-        
-        const message = `SCHOLASTICA FINANCE: Neno lako jipya la siri ni: ${newPassword}. Tafadhali ingia na kubadilisha neno la siri kwenye dashboard.`;
-        
+        const message = `SCHOLASTICA FINANCE: Neno lako jipya la siri ni: ${newPassword}. Badilisha baada ya kuingia.`;
         await sendSMS(formattedPhone, message);
-        await sendSMS('0686527605', `Password imebadilishwa kwa user ${user.username}. New password: ${newPassword}`);
-        
-        res.json({ success: true, message: 'Neno jipya la siri limetumwa kwa namba yako ya simu' });
+        await sendSMS('0686527605', `Password imebadilishwa kwa ${user.username}. New: ${newPassword}`);
+        res.json({ success: true, message: 'Neno jipya la siri limetumwa kwa simu yako' });
     } catch (error) {
-        console.error('Forgot password error:', error);
-        res.status(500).json({ success: false, message: 'Server error. Tafadhali jaribu tena.' });
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
-// Change Password (while logged in)
 app.post('/api/auth/change-password', async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ success: false, message: 'Haujaingia mfumo' });
-    }
-    
+    if (!token) return res.status(401).json({ success: false, message: 'Haujaingia' });
     let decoded;
     try {
         decoded = jwt.verify(token, process.env.JWT_SECRET || 'scholastica_secret');
     } catch (err) {
         return res.status(401).json({ success: false, message: 'Token si sahihi' });
     }
-    
     const { current_password, new_password } = req.body;
-    
-    if (!current_password || !new_password) {
-        return res.status(400).json({ success: false, message: 'Neno la siri la sasa na jipya vinahitajika' });
-    }
-    
-    if (new_password.length < 6) {
-        return res.status(400).json({ success: false, message: 'Neno la siri jipya lazima iwe na herufi 6 au zaidi' });
-    }
-    
+    if (!current_password || !new_password) return res.status(400).json({ success: false, message: 'Neno la siri la sasa na jipya vinahitajika' });
+    if (new_password.length < 6) return res.status(400).json({ success: false, message: 'Neno jipya lazima herufi 6+' });
     try {
         const result = await pool.query(`SELECT password_hash FROM users WHERE id = $1`, [decoded.id]);
-        const user = result.rows[0];
-        
-        const isValid = await bcrypt.compare(current_password, user.password_hash);
-        if (!isValid) {
-            return res.status(401).json({ success: false, message: 'Neno la siri la sasa si sahihi' });
-        }
-        
+        const isValid = await bcrypt.compare(current_password, result.rows[0].password_hash);
+        if (!isValid) return res.status(401).json({ success: false, message: 'Neno la siri la sasa si sahihi' });
         const salt = await bcrypt.genSalt(10);
         const new_password_hash = await bcrypt.hash(new_password, salt);
-        
         await pool.query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [new_password_hash, decoded.id]);
-        
-        res.json({ success: true, message: 'Neno la siri limebadilishwa kikamilifu!' });
-    } catch (error) {
-        console.error('Change password error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
+        res.json({ success: true, message: 'Neno la siri limebadilishwa!' });
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 // ==================== CLIENTS ====================
-// Check if client exists
 app.post('/api/clients/check', async (req, res) => {
     const { phone_number } = req.body;
-    if (!phone_number) {
-        return res.status(400).json({ success: false, message: 'Namba ya simu inahitajika' });
-    }
-    
+    if (!phone_number) return res.status(400).json({ success: false, message: 'Namba ya simu inahitajika' });
     try {
         const formattedPhone = formatPhoneNumber(phone_number);
         const result = await pool.query(`SELECT * FROM clients WHERE phone_number = $1`, [formattedPhone]);
-        
         if (result.rows.length > 0) {
             res.json({ success: true, exists: true, client: result.rows[0] });
         } else {
             res.json({ success: true, exists: false });
         }
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.get('/api/clients', async (req, res) => {
@@ -248,43 +201,29 @@ app.get('/api/clients/:id', async (req, res) => {
 });
 
 app.post('/api/clients', async (req, res) => {
-    const { full_name, phone_number, email, address } = req.body;
+    const { full_name, phone_number, address } = req.body;
     if (!full_name || !phone_number) return res.status(400).json({ success: false, message: 'Jina na namba ya simu vinahitajika' });
     try {
         const formattedPhone = formatPhoneNumber(phone_number);
-        
-        // Check if client already exists
         const existingClient = await pool.query(`SELECT * FROM clients WHERE phone_number = $1`, [formattedPhone]);
         if (existingClient.rows.length > 0) {
-            return res.status(409).json({ 
-                success: false, 
-                exists: true, 
-                client: existingClient.rows[0],
-                message: 'Mteja tayari yupo kwenye mfumo. Je, unataka kumuongezea deni?'
-            });
+            return res.status(409).json({ success: false, exists: true, client: existingClient.rows[0], message: 'Mteja tayari yupo. Taka kumuongezea deni?' });
         }
-        
-        const result = await pool.query(`INSERT INTO clients (full_name, phone_number, email, address) VALUES ($1, $2, $3, $4) RETURNING *`, [full_name, formattedPhone, email || null, address || null]);
+        const result = await pool.query(`INSERT INTO clients (full_name, phone_number, address) VALUES ($1, $2, $3) RETURNING *`, [full_name, formattedPhone, address || null]);
         res.status(201).json({ success: true, data: result.rows[0] });
-    } catch (error) {
-        if (error.code === '23505') res.status(400).json({ success: false, message: 'Namba ya simu tayari ipo' });
-        else res.status(500).json({ success: false, message: 'Server error' });
-    }
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.put('/api/clients/:id', async (req, res) => {
-    const { full_name, phone_number, email, address, status } = req.body;
+    const { full_name, phone_number, address, status } = req.body;
     const clientId = req.params.id;
     try {
         let formattedPhone = phone_number;
         if (phone_number) formattedPhone = formatPhoneNumber(phone_number);
-        const result = await pool.query(`UPDATE clients SET full_name = COALESCE($1, full_name), phone_number = COALESCE($2, phone_number), email = COALESCE($3, email), address = COALESCE($4, address), status = COALESCE($5, status), updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *`, [full_name || null, formattedPhone || null, email || null, address || null, status || null, clientId]);
+        const result = await pool.query(`UPDATE clients SET full_name = COALESCE($1, full_name), phone_number = COALESCE($2, phone_number), address = COALESCE($3, address), status = COALESCE($4, status) WHERE id = $5 RETURNING *`, [full_name || null, formattedPhone || null, address || null, status || null, clientId]);
         if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
         res.json({ success: true, message: 'Taarifa zimehaririwa', data: result.rows[0] });
-    } catch (error) {
-        if (error.code === '23505') res.status(400).json({ success: false, message: 'Namba ya simu tayari ipo' });
-        else res.status(500).json({ success: false, message: 'Server error' });
-    }
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.delete('/api/clients/:id', async (req, res) => {
@@ -292,11 +231,11 @@ app.delete('/api/clients/:id', async (req, res) => {
     try {
         const activeLoans = await pool.query(`SELECT COUNT(*) FROM loans WHERE client_id = $1 AND status = 'active'`, [clientId]);
         if (parseInt(activeLoans.rows[0].count) > 0) {
-            return res.status(400).json({ success: false, message: 'Haiwezi kumfuta mteja aliye na mikopo inayoendelea' });
+            return res.status(400).json({ success: false, message: 'Haiwezi kufuta mteja aliye na mikopo' });
         }
         const result = await pool.query(`DELETE FROM clients WHERE id = $1 RETURNING *`, [clientId]);
         if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Mteja hatapatikana' });
-        res.json({ success: true, message: 'Mteja amefutwa kabisa', data: result.rows[0] });
+        res.json({ success: true, message: 'Mteja amefutwa', data: result.rows[0] });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
@@ -304,7 +243,6 @@ app.delete('/api/clients/:id', async (req, res) => {
 app.get('/api/loans/all', async (req, res) => {
     const { sort } = req.query;
     let orderBy = 'l.created_at DESC';
-    
     if (sort === 'days_asc') orderBy = 'days_remaining ASC';
     else if (sort === 'days_desc') orderBy = 'days_remaining DESC';
     else if (sort === 'amount_asc') orderBy = 'l.amount_borrowed ASC';
@@ -315,7 +253,9 @@ app.get('/api/loans/all', async (req, res) => {
         const result = await pool.query(`
             SELECT l.*, c.full_name as client_full_name, c.phone_number,
                    (l.due_date - CURRENT_DATE) as days_remaining, 
-                   CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue 
+                   CASE WHEN CURRENT_DATE > l.due_date THEN (CURRENT_DATE - l.due_date) ELSE 0 END as days_overdue,
+                   TO_CHAR(l.start_date, 'DD/MM/YYYY') as start_date_formatted,
+                   TO_CHAR(l.due_date, 'DD/MM/YYYY') as due_date_formatted
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
             ORDER BY ${orderBy}
@@ -328,7 +268,9 @@ app.get('/api/loans/defaulters', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT l.*, c.full_name as client_full_name, c.phone_number,
-                   (CURRENT_DATE - l.due_date) as days_overdue 
+                   (CURRENT_DATE - l.due_date) as days_overdue,
+                   TO_CHAR(l.start_date, 'DD/MM/YYYY') as start_date_formatted,
+                   TO_CHAR(l.due_date, 'DD/MM/YYYY') as due_date_formatted
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
             WHERE l.status = 'active' AND CURRENT_DATE > l.due_date 
@@ -342,7 +284,9 @@ app.get('/api/loans/upcoming', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT l.*, c.full_name as client_full_name, c.phone_number,
-                   (l.due_date - CURRENT_DATE) as days_remaining 
+                   (l.due_date - CURRENT_DATE) as days_remaining,
+                   TO_CHAR(l.start_date, 'DD/MM/YYYY') as start_date_formatted,
+                   TO_CHAR(l.due_date, 'DD/MM/YYYY') as due_date_formatted
             FROM loans l 
             JOIN clients c ON l.client_id = c.id 
             WHERE l.status = 'active' AND CURRENT_DATE <= l.due_date AND (l.due_date - CURRENT_DATE) <= 5 
@@ -353,17 +297,34 @@ app.get('/api/loans/upcoming', async (req, res) => {
 });
 
 app.post('/api/loans', async (req, res) => {
-    const { client_id, client_name, phone_number, amount_borrowed, interest_rate, duration_months, due_date } = req.body;
+    const { client_id, client_name, phone_number, amount_borrowed, interest_rate, duration_months, start_date } = req.body;
     if (!client_id || !amount_borrowed || !interest_rate) return res.status(400).json({ success: false, message: 'Taarifa zote muhimu zinahitajika' });
+    
     const duration = duration_months || 1;
     const interest_amount = amount_borrowed * (interest_rate / 100) * duration;
     const total_amount = amount_borrowed + interest_amount;
-    const start_date = new Date().toISOString().split('T')[0];
-    const finalDueDate = due_date || (() => { const date = new Date(); date.setMonth(date.getMonth() + duration); return date.toISOString().split('T')[0]; })();
+    
+    // Calculate due date based on start date + duration months
+    let startDateObj = start_date ? new Date(start_date) : new Date();
+    let finalStartDate = startDateObj.toISOString().split('T')[0];
+    let dueDateObj = new Date(startDateObj);
+    dueDateObj.setMonth(dueDateObj.getMonth() + duration);
+    let finalDueDate = dueDateObj.toISOString().split('T')[0];
+    
     try {
-        const result = await pool.query(`INSERT INTO loans (client_id, client_name, phone_number, amount_borrowed, interest_rate, interest_amount, total_amount, duration_months, start_date, due_date, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'active') RETURNING *`, [client_id, client_name, phone_number, amount_borrowed, interest_rate, interest_amount, total_amount, duration, start_date, finalDueDate]);
+        const result = await pool.query(`
+            INSERT INTO loans (client_id, client_name, phone_number, amount_borrowed, interest_rate, 
+                               interest_amount, total_amount, duration_months, start_date, due_date, status) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'active') 
+            RETURNING *
+        `, [client_id, client_name, phone_number, amount_borrowed, interest_rate,
+            interest_amount, total_amount, duration, finalStartDate, finalDueDate]);
+        
         res.status(201).json({ success: true, data: result.rows[0] });
-    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' }); 
+    }
 });
 
 // ==================== PAYMENTS ====================
@@ -410,10 +371,9 @@ app.post('/api/payments', async (req, res) => {
             await pool.query(`UPDATE loans SET status = $1 WHERE id = $2`, [newStatus, loan_id]);
         }
         
-        // Send SMS confirmation to client
         const clientResult = await pool.query(`SELECT full_name, phone_number FROM clients WHERE id = $1`, [loanCheck.rows[0].client_id]);
         if (clientResult.rows.length > 0 && clientResult.rows[0].phone_number) {
-            const message = `SCHOLASTICA FINANCE: Malipo yako ya TZS ${Number(amount).toLocaleString()} yamepokelewa. Salio lililosalia: TZS ${newBalance.toLocaleString()}. Asante!`;
+            const message = `SCHOLASTICA FINANCE: Malipo yako ya TZS ${Number(amount).toLocaleString()} yamepokelewa. Salio: TZS ${newBalance.toLocaleString()}. Asante!`;
             await sendSMS(clientResult.rows[0].phone_number, message);
         }
         
@@ -430,21 +390,8 @@ app.get('/api/reports/dashboard', async (req, res) => {
         const totalRepaid = await pool.query(`SELECT COALESCE(SUM(amount_repaid), 0) as total FROM loans`);
         const defaulters = await pool.query(`SELECT COUNT(*) FROM loans WHERE status = 'active' AND CURRENT_DATE > due_date`);
         const totalInterest = await pool.query(`SELECT COALESCE(SUM(interest_amount), 0) as total FROM loans`);
-
-        res.json({ 
-            success: true, 
-            data: { 
-                totalClients: parseInt(totalClients.rows[0].count), 
-                activeLoans: parseInt(activeLoans.rows[0].count), 
-                totalDisbursed: parseFloat(totalDisbursed.rows[0].total), 
-                totalRepaid: parseFloat(totalRepaid.rows[0].total), 
-                defaulters: parseInt(defaulters.rows[0].count), 
-                totalInterest: parseFloat(totalInterest.rows[0].total) 
-            } 
-        });
-    } catch (error) { 
-        res.status(500).json({ success: false, message: 'Server error' }); 
-    }
+        res.json({ success: true, data: { totalClients: parseInt(totalClients.rows[0].count), activeLoans: parseInt(activeLoans.rows[0].count), totalDisbursed: parseFloat(totalDisbursed.rows[0].total), totalRepaid: parseFloat(totalRepaid.rows[0].total), defaulters: parseInt(defaulters.rows[0].count), totalInterest: parseFloat(totalInterest.rows[0].total) } });
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'Endpoint haipatikani' }); });
@@ -452,6 +399,5 @@ app.use('*', (req, res) => { res.status(404).json({ success: false, message: 'En
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => { 
     console.log(`✅ Scholastica Finance API running on port ${PORT}`);
-    console.log(`📱 Admin phone for alerts: 0686527605`);
-    console.log(`📱 SMS only - No email alerts`);
+    console.log(`📱 Admin phone: 0686527605`);
 });
